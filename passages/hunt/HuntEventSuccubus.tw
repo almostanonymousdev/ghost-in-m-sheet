@@ -2,7 +2,7 @@
 <<set _check to random(1,6)>>
 <<if _check eq 1>>
 	<<image "characters/succubus/hunt2.0.jpg" "displayCentredImgs">>
-	@@.mc-thoughts; The ghost moves in on you, but out of nowhere, a surge of sensual magic cuts through the air. The succubus materializes, her very presence snagging the ghost's attention. Her figure exudes an aura of sexuality, with each contour and curve appearing as if designed@@
+	<<thought>>The ghost moves in on you, but out of nowhere, a surge of sensual magic cuts through the air. The succubus materializes, her very presence snagging the ghost's attention. Her figure exudes an aura of sexuality, with each contour and curve appearing as if designed<</thought>>
 	<<linkappend "@@.usebtn; specifically for temptation.@@">>
 		<<set _checkIn to random(1,4)>>
 		<<if _checkIn eq 1>>
@@ -14,43 +14,43 @@
 		<<elseif _checkIn eq 4>>
 			<<video "characters/succubus/hunt2.4.mp4">>
 		<</if>>
-		@@.mc-thoughts; She slowly kneels before the ghost, her lips gently enveloping his cock@@<br>
+		<<thought>>She slowly kneels before the ghost, her lips gently enveloping his cock<</thought>><br>
 		@@color:red; Let's see how long you can last@@<br>
-		@@.mc-thoughts; Her tongue caresses him, movements slow and mocking, as if she's playing with him, not letting him@@
+		<<thought>>Her tongue caresses him, movements slow and mocking, as if she's playing with him, not letting him<</thought>>
 		<<linkappend "@@.usebtn; cum quickly.@@">>
 			<<video "characters/succubus/hunt2.5.mp4">>
-			@@.mc-thoughts; The ghost can't hold back, his cock erupts with cum that pours into her mouth and onto her face, making her even more seductive. They vanish, leaving you in silence.@@<br><br>
+			<<thought>>The ghost can't hold back, his cock erupts with cum that pours into her mouth and onto her face, making her even more seductive. They vanish, leaving you in silence.<</thought>><br><br>
 			@@.backbtn; [[Continue|$return]]@@
 		<</linkappend>>
 	<</linkappend>>
 
 <<elseif _check eq 2>>
 	<<image "characters/succubus/hunt1.0.jpg" "displayCentredImgs">>
-	@@.mc-thoughts; The ghost moves in on you, but out of nowhere, a surge of sensual magic cuts through the air. The succubus materializes, her very presence snagging the ghost's attention. Her figure exudes an aura of sexuality, with each contour and curve appearing as if designed@@
+	<<thought>>The ghost moves in on you, but out of nowhere, a surge of sensual magic cuts through the air. The succubus materializes, her very presence snagging the ghost's attention. Her figure exudes an aura of sexuality, with each contour and curve appearing as if designed<</thought>>
 	<<linkappend "@@.usebtn; specifically for temptation.@@">>
 		<<video "characters/succubus/hunt1.1.mp4">>
-		@@.mc-thoughts; The succubus mounts the ghost with her huge ass, starting to fuck him@@<br>
+		<<thought>>The succubus mounts the ghost with her huge ass, starting to fuck him<</thought>><br>
 		@@color:red; Oh, fuck~ I've missed this so much...@@<br>
-		@@.mc-thoughts; Her movements are rhythmic and sensual, her moans filling the entire space.@@<br>
-		@@.mc-speech; It's time to get out of here.@@<br><br>
+		<<thought>>Her movements are rhythmic and sensual, her moans filling the entire space.<</thought>><br>
+		<<mc>>It's time to get out of here.<</mc>><br><br>
 		@@.backbtn; [[Continue|$return]]@@<br>
 	<</linkappend>>
 <<elseif _check eq 3>>
 	<<image "characters/succubus/form3.0.jpg" "displayCentredImgs">>
-	@@.mc-thoughts; The ghost moves in on you, but out of nowhere, a surge of sensual magic cuts through the air. The succubus materializes, her very presence snagging the ghost's attention. Her figure exudes an aura of sexuality, with each contour and curve appearing as if designed@@
+	<<thought>>The ghost moves in on you, but out of nowhere, a surge of sensual magic cuts through the air. The succubus materializes, her very presence snagging the ghost's attention. Her figure exudes an aura of sexuality, with each contour and curve appearing as if designed<</thought>>
 	<<linkappend "@@.usebtn; specifically for temptation.@@">>
 		<<video "characters/succubus/hunt5.1.mp4">>
-		@@.mc-thoughts; The succubus smiles, beckoning the ghost closer, and he doesn't hesitate@@<br>
+		<<thought>>The succubus smiles, beckoning the ghost closer, and he doesn't hesitate<</thought>><br>
 		@@color:red; Fuck me how you want, I'll be your little whore now@@<br>
-		@@.mc-thoughts; The ghost enters her with a brutal force, each thrust filled with fury, she moans, yet her smile shows@@ <<linkappend "@@.usebtn; she's enjoying it.@@">>
+		<<thought>>The ghost enters her with a brutal force, each thrust filled with fury, she moans, yet her smile shows<</thought>> <<linkappend "@@.usebtn; she's enjoying it.@@">>
 			<<video "characters/succubus/hunt5.2.mp4">>
-			@@.mc-thoughts; The ghost can't hold back, he cums inside her, his cum dripping from her thoroughly fucked ass.@@<br><br>
+			<<thought>>The ghost can't hold back, he cums inside her, his cum dripping from her thoroughly fucked ass.<</thought>><br><br>
 			@@.backbtn; [[Continue|$return]]@@<br>
 		<</linkappend>>
 	<</linkappend>>
 <<elseif _check eq 4>>
 	<<image "characters/succubus/hunt6.0.jpg" "displayCentredImgs">>
-	@@.mc-thoughts; The ghost moves in on you, but out of nowhere, a surge of sensual magic cuts through the air. The succubus materializes, her very presence snagging the ghost's attention. Her figure exudes an aura of sexuality, with each contour and curve appearing as if designed@@
+	<<thought>>The ghost moves in on you, but out of nowhere, a surge of sensual magic cuts through the air. The succubus materializes, her very presence snagging the ghost's attention. Her figure exudes an aura of sexuality, with each contour and curve appearing as if designed<</thought>>
 	<<linkappend "@@.usebtn; specifically for temptation.@@">>
 		<<set _checkIn to random(1,2)>>
 		<<if _checkIn eq 1>>
@@ -58,17 +58,17 @@
 		<<elseif _checkIn eq 2>>
 			<<video "characters/succubus/hunt6.2.mp4">>
 		<</if>>
-		@@.mc-thoughts; The succubus smiles, beckoning the ghost closer, and he doesn't hesitate@@<br>
+		<<thought>>The succubus smiles, beckoning the ghost closer, and he doesn't hesitate<</thought>><br>
 		@@color:red; Fuck me how you want, I'll be your little whore now@@<br>
-		@@.mc-thoughts; The ghost enters her with a brutal force, each thrust filled with fury, she moans, yet her smile shows@@ <<linkappend "@@.usebtn; she's enjoying it.@@">>
+		<<thought>>The ghost enters her with a brutal force, each thrust filled with fury, she moans, yet her smile shows<</thought>> <<linkappend "@@.usebtn; she's enjoying it.@@">>
 			<<video "characters/succubus/hunt6.3.mp4">>
-			@@.mc-thoughts;The ghost can't hold back, he cums inside her, his cum dripping from both her thoroughly fucked ass and pussy.@@<br><br>
+			<<thought>>The ghost can't hold back, he cums inside her, his cum dripping from both her thoroughly fucked ass and pussy.<</thought>><br><br>
 			@@.backbtn; [[Continue|$return]]@@<br>
 		<</linkappend>>
 	<</linkappend>>
 <<elseif _check eq 5>>
 	<<image "characters/succubus/hunt3.0.jpg" "displayCentredImgs">>
-	@@.mc-thoughts; The ghost moves in on you, but out of nowhere, a surge of sensual magic cuts through the air. The succubus materializes, her very presence snagging the ghost's attention. Her figure exudes an aura of sexuality, with each contour and curve appearing as if designed@@
+	<<thought>>The ghost moves in on you, but out of nowhere, a surge of sensual magic cuts through the air. The succubus materializes, her very presence snagging the ghost's attention. Her figure exudes an aura of sexuality, with each contour and curve appearing as if designed<</thought>>
 	<<linkappend "@@.usebtn; specifically for temptation.@@">>
 		<<set _checkIn to random(1,2)>>
 		<<if _checkIn eq 1>>
@@ -76,17 +76,17 @@
 		<<elseif _checkIn eq 2>>
 			<<video "characters/succubus/hunt3.2.mp4">>
 		<</if>>
-		@@.mc-thoughts; The succubus smiles, beckoning the ghost closer, and he doesn't hesitate@@<br>
+		<<thought>>The succubus smiles, beckoning the ghost closer, and he doesn't hesitate<</thought>><br>
 		@@color:red; Fuck me how you want, I'll be your little whore now@@<br>
-		@@.mc-thoughts; The ghost enters her with a brutal force, each thrust filled with fury, she moans, yet her smile shows@@ <<linkappend "@@.usebtn; she's enjoying it.@@">>
+		<<thought>>The ghost enters her with a brutal force, each thrust filled with fury, she moans, yet her smile shows<</thought>> <<linkappend "@@.usebtn; she's enjoying it.@@">>
 			<<video "characters/succubus/hunt3.3.mp4">>
-			@@.mc-thoughts; The ghost can't hold back, he cums inside her, his cum dripping from her thoroughly fucked ass.@@<br><br>
+			<<thought>>The ghost can't hold back, he cums inside her, his cum dripping from her thoroughly fucked ass.<</thought>><br><br>
 			@@.backbtn; [[Continue|$return]]@@<br>
 		<</linkappend>>
 	<</linkappend>>
 <<elseif _check eq 6>>
 	<<image "characters/succubus/hunt3.0.jpg" "displayCentredImgs">>
-	@@.mc-thoughts; The ghost moves in on you, but out of nowhere, a surge of sensual magic cuts through the air. The succubus materializes, her very presence snagging the ghost's attention. Her figure exudes an aura of sexuality, with each contour and curve appearing as if designed@@
+	<<thought>>The ghost moves in on you, but out of nowhere, a surge of sensual magic cuts through the air. The succubus materializes, her very presence snagging the ghost's attention. Her figure exudes an aura of sexuality, with each contour and curve appearing as if designed<</thought>>
 	<<linkappend "@@.usebtn; specifically for temptation.@@">>
 		<<set _checkIn to random(1,3)>>
 		<<if _checkIn eq 1>>
@@ -96,11 +96,11 @@
 		<<elseif _checkIn eq 3>>
 			<<video "characters/succubus/hunt3.6.mp4">>
 		<</if>>
-		@@.mc-thoughts; The succubus smiles, beckoning the ghost closer, and he doesn't hesitate@@<br>
+		<<thought>>The succubus smiles, beckoning the ghost closer, and he doesn't hesitate<</thought>><br>
 		@@color:red; Fuck me how you want, I'll be your little whore now@@<br>
-		@@.mc-thoughts; the ghost enters her with brutal force, fucking her pussy and mouth, each thrust filled with fury, she moans, yet her smile shows@@ <<linkappend "@@.usebtn; she's enjoying it.@@">>
+		<<thought>>the ghost enters her with brutal force, fucking her pussy and mouth, each thrust filled with fury, she moans, yet her smile shows<</thought>> <<linkappend "@@.usebtn; she's enjoying it.@@">>
 			<<video "characters/succubus/hunt3.7.mp4">>
-			@@.mc-thoughts; The ghost can't hold back, he cums all over her face@@<br><br>
+			<<thought>>The ghost can't hold back, he cums all over her face<</thought>><br><br>
 			@@.backbtn; [[Continue|$return]]@@<br>
 		<</linkappend>>
 	<</linkappend>>

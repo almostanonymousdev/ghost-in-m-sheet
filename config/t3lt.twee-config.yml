@@ -636,3 +636,42 @@ sugarcube-2:
       name: huntFooterLight
     huntLootBeat:
       name: huntLootBeat
+    mc:
+      name: mc
+      container: true
+      description: "Container macro: the MC speaks. Renders the body in the MC
+        speech colour (pink, .mc-speech) wrapped in curly quotation marks, as a
+        block-level .speech-line. Pass a truthy first arg (<<mc true>>) to
+        prefix her name as a bold speaker label; normally she is the unlabelled
+        POV character. Body may contain macros / variables. Args: [showName
+        (bool)]."
+    say:
+      name: say
+      container: true
+      description: "Container macro: an NPC speaks. Renders the body in the NPC
+        speech colour (blue, .notmc-speech) wrapped in curly quotation marks, as
+        a block-level .speech-line. Optional first arg is the speaker's name,
+        rendered as a bold label (.speaker-name) -- use it on the first line of a
+        turn, drop it on continuations. Body may contain macros / variables.
+        Args: [speakerName (string)]."
+    narration:
+      name: narration
+      container: true
+      description: "Container macro: a stage direction / action beat. Renders the
+        body in the default narration colour (NOT a speaker colour), italic, with
+        no quotation marks (.stage-dir). This is what action lines that used to
+        sit inside a speech block become. No args."
+    thought:
+      name: thought
+      container: true
+      description: "Container macro: MC interior monologue. Renders the body in
+        grey italic with no quotes (.mc-thoughts). Macro wrapper over the
+        existing .mc-thoughts class. No args."
+    vocal:
+      name: vocal
+      container: true
+      description: "Container macro: a non-verbal vocalisation (moan / gasp /
+        whisper). Formalises the old ~tilde~ convention -- renders the body in
+        the speaker colour, italic and dimmed, with no quotes (.vocal + speech
+        colour). First arg selects the voice: 'mc' (default, pink) or 'npc'
+        (blue). Args: [who ('mc' | 'npc')]."

@@ -14,7 +14,7 @@
 <<set _sf to setup.HuntController.searchedFurniture()>>
 <<set _kinds to _sf ? setup.HuntController.lootKindsAt(_sf.room, _sf.suffix) : []>>
 <<if _kinds.length eq 0>>
-	@@.mc-thoughts; You search but find nothing of note.@@<br>
+	<<thought>>You search but find nothing of note.<</thought>><br>
 	<br>
 	@@.backbtn; [[Back|$return]]@@
 <<elseif _kinds.length eq 1>>
@@ -52,12 +52,12 @@
 	<<elseif _toolId>>
 		<<include "PickupHuntTool">>
 	<<else>>
-		@@.mc-thoughts; You search but find nothing of note.@@<br>
+		<<thought>>You search but find nothing of note.<</thought>><br>
 		<br>
 		@@.backbtn; [[Back|$return]]@@
 	<</if>>
 <<else>>
-	@@.mc-thoughts; You find several things tucked together.@@<br>
+	<<thought>>You find several things tucked together.<</thought>><br>
 	<br>
 	<<for _k range _kinds>>
 		<<huntLootBeat _k>>
@@ -73,13 +73,14 @@
    (setup.Tarot.markTarotCarrying) feeds Bag's tarot link
    and the TarotCards passage; takeLoot stamps the slot collected
    so a re-search finds nothing. */
-@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; deck of cards.@@">><br>
+<<thought>>You come across a strange<</thought>> <<linkappend "@@.usebtn; deck of cards.@@">><br>
 	<<image "mechanics/cursedpossessions/tarot-cards/tarot.png" "displayCentredImgs">>
 
-	@@.mc-speech; Hmm... are these... tarot cards? <br>
-	This deck looks so unusual... They say it can predict the future.<br>
-	Maybe I should draw a card to see what fate has in store for me? <br>
-	I think I'll take the tarot cards with me. They might be useful.@@<br>
+	<<mc>>Hmm... are these... tarot cards? <br>
+		This deck looks so unusual... They say it can predict the future.<br>
+		Maybe I should draw a card to see what fate has in store for me? <br>
+		I think I'll take the tarot cards with me. They might be useful.
+	<</mc>><br>
 	<br>
 	@@.mc-action; You put the tarot cards in your bag@@<br>
 	<<run setup.Tarot.markTarotCarrying()>>
@@ -98,16 +99,16 @@
    video without walking back to the home cursed-item events. */
 <<run setup.HuntController.takeLoot("cursedItem")>>
 <<if setup.Witch.hasCursedItemToTurnIn()>>
-	@@.mc-thoughts; You come across another cursed object, but you're already carrying one. Best leave this one for now.@@<br>
+	<<thought>>You come across another cursed object, but you're already carrying one. Best leave this one for now.<</thought>><br>
 	<br>
 	@@.backbtn; [[Back|$return]]@@
 <<else>>
 	<<set _ci to setup.Companion.rollFoundCursedItem()>>
-	@@.mc-thoughts; You feel an unusual warmth from one of the objects, and as you reach in, the heat spreads through your fingers. You realize@@ <<linkappend "@@.usebtn; it's a cursed item.@@">><br>
+	<<thought>>You feel an unusual warmth from one of the objects, and as you reach in, the heat spreads through your fingers. You realize<</thought>> <<linkappend "@@.usebtn; it's a cursed item.@@">><br>
 		@@.mc-speech; <<= _ci.speech>>@@<br>
 		<<image _ci.img "displayCentredImgs">>
 		<br>
-		@@.mc-speech; The witch will want to see this. Just touching it has me feeling... worked up.@@<br>
+		<<mc>>The witch will want to see this. Just touching it has me feeling... worked up.<</mc>><br>
 		+30 <<statIcon setup.StatIcon.HEALTH>><br><<addLust 30>>
 		<br>
 		@@.mc-action; You put the cursed item in your bag@@<br>
@@ -123,20 +124,21 @@
 :: PickupMonkeyPaw [nobr] {"position":"2050,200","size":"100,100"}
 /* Pickup beat for the monkey paw. The setup.MonkeyPaw.markFound()
    flip feeds Bag's monkey-paw link + the MonkeyPaw wish menu. */
-@@.mc-thoughts; You come across a strange@@ <<linkappend "@@.usebtn; paw.@@">><br>
+<<thought>>You come across a strange<</thought>> <<linkappend "@@.usebtn; paw.@@">><br>
 	<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw.jpg" "displayCentredImgs">>
 
-	@@.mc-speech; Is this... the Monkey Paw? <br>
-	I think I read something about it when I was younger.<br>
-	It grants wishes, but always with tragic consequences. <br>
-	Maybe if I'm careful, I can avoid any trouble? <br>
-	I think I'll take the monkey paw with me. It might be useful.@@<br>
+	<<mc>>Is this... the Monkey Paw? <br>
+		I think I read something about it when I was younger.<br>
+		It grants wishes, but always with tragic consequences. <br>
+		Maybe if I'm careful, I can avoid any trouble? <br>
+		I think I'll take the monkey paw with me. It might be useful.
+	<</mc>><br>
 	<br>
 	@@.mc-action; You put monkey paw in your bag@@<br>
 	<<run setup.MonkeyPaw.markFound()>>
 	<<run setup.HuntController.takeLoot("monkeyPaw")>>
 	<br>
-	@@.mc-thoughts; Khadija will know the rules on this thing. Better to ask before I try a wish.@@<br>
+	<<thought>>Khadija will know the rules on this thing. Better to ask before I try a wish.<</thought>><br>
 <</linkappend>>
 <br><br>
 @@.backbtn; [[Back|$return]]@@
@@ -157,17 +159,17 @@
 	<<set _toolId to setup.FloorPlan.toolIdFromLootKind(_kind)>>
 	<<if _kind eq "cursedItem">>
 		<<if setup.Witch.hasCursedItemToTurnIn()>>
-			@@.mc-thoughts; Another cursed item, tucked into the furniture -- you're already carrying one, so this one stays.@@<br><br>
+			<<thought>>Another cursed item, tucked into the furniture -- you're already carrying one, so this one stays.<</thought>><br><br>
 		<<else>>
 			<<set _ci to setup.Companion.rollFoundCursedItem()>>
-			@@.mc-thoughts; A cursed item, tucked into the furniture.@@<br>
+			<<thought>>A cursed item, tucked into the furniture.<</thought>><br>
 			@@.mc-speech; <<= _ci.speech>>@@<br>
 			<<image _ci.img "iconsOnMap">><br>
 			@@.mc-action; You put it in your bag.@@<br><br>
 		<</if>>
 		<<run setup.HuntController.takeLoot("cursedItem")>>
 	<<elseif _kind eq "rescueClue">>
-		@@.mc-thoughts; A torn fragment of an old photo, tucked alongside someone's EMF reader. The reader spikes the moment you bring it close.@@<br>
+		<<thought>>A torn fragment of an old photo, tucked alongside someone's EMF reader. The reader spikes the moment you bring it close.<</thought>><br>
 		<<image 'characters/rescue/house/' + setup.MissingWomen.randomRescuePhotoNumber() + '.jpg' { class: setup.MissingWomen.tornStyleRandom() + ' iconsOnMap' }>><br>
 		@@.mc-action; You pocket the photo fragment.@@<br>
 		<<run setup.MissingWomen.setRescueClueFound()>>
@@ -178,7 +180,7 @@
 		<br>
 		<<run setup.HuntController.takeLoot("rescueClue")>>
 	<<elseif _kind eq "tarotCards">>
-		@@.mc-thoughts; A strange deck of tarot cards.@@<br>
+		<<thought>>A strange deck of tarot cards.<</thought>><br>
 		<<image "mechanics/cursedpossessions/tarot-cards/tarot.png" "iconsOnMap">><br>
 		@@.mc-action; You put the tarot cards in your bag.@@<br><br>
 		<<if setup.Tarot.isTarotDiscoverable()>>
@@ -186,7 +188,7 @@
 		<</if>>
 		<<run setup.HuntController.takeLoot("tarotCards")>>
 	<<elseif _kind eq "monkeyPaw">>
-		@@.mc-thoughts; A withered monkey's paw.@@<br>
+		<<thought>>A withered monkey's paw.<</thought>><br>
 		<<image "mechanics/cursedpossessions/monkey-paw/monkeypaw.jpg" "iconsOnMap">><br>
 		@@.mc-action; You put the paw in your bag.@@<br><br>
 		<<if setup.MonkeyPaw.isDiscoverable()>>
@@ -195,36 +197,36 @@
 		<<run setup.HuntController.takeLoot("monkeyPaw")>>
 	<<elseif _kind eq "cash">>
 		<<set _amt to 100 + Math.floor(Math.random() * 201)>>
-		@@.mc-thoughts; A hidden cache -- $<<= _amt>> tucked into the furniture.@@<br>
-		@@.mc-thoughts; if they're still haunting the place, it's not grave robbing...right?@@<br>
+		<<thought>>A hidden cache -- $<<= _amt>> tucked into the furniture.<</thought>><br>
+		<<thought>>if they're still haunting the place, it's not grave robbing...right?<</thought>><br>
 		@@.mc-action; You pocket the cash.@@<br><br>
 		<<run setup.Mc.addMoney(_amt)>>
 		<<run setup.HuntController.takeLoot("cash")>>
 	<<elseif _kind eq "ectoplasm">>
-		@@.mc-thoughts; A jar of translucent, purified ectoplasm -- gooey gold, 10mL.@@<br>
-		@@.mc-thoughts; I wonder what it tastes like?@@<br>
+		<<thought>>A jar of translucent, purified ectoplasm -- gooey gold, 10mL.<</thought>><br>
+		<<thought>>I wonder what it tastes like?<</thought>><br>
 		@@.mc-action; You put the jar in your bag.@@<br><br>
 		<<run setup.HuntController.addEctoplasm(10)>>
 		<<run setup.HuntController.takeLoot("ectoplasm")>>
 	<<elseif _kind eq "clothesStolenPanties" and setup.Wardrobe.isPantiesStolen()>>
-		@@.mc-thoughts; Your stolen panties, balled up out of sight.@@<br>
+		<<thought>>Your stolen panties, balled up out of sight.<</thought>><br>
 		@@.mc-action; You slip them back on.@@<br><br>
 		<<run setup.Wardrobe.restoreGarment("panties")>>
 	<<elseif _kind eq "clothesStolenBra" and setup.Wardrobe.isBraStolen()>>
-		@@.mc-thoughts; Your stolen bra, balled up out of sight.@@<br>
+		<<thought>>Your stolen bra, balled up out of sight.<</thought>><br>
 		@@.mc-action; You fasten it back on.@@<br><br>
 		<<run setup.Wardrobe.restoreGarment("bra")>>
 	<<elseif _kind eq "clothesStolenShirt" and setup.Wardrobe.isShirtStolen()>>
-		@@.mc-thoughts; Your stolen top, balled up out of sight.@@<br>
+		<<thought>>Your stolen top, balled up out of sight.<</thought>><br>
 		@@.mc-action; You pull it back on.@@<br><br>
 		<<run setup.Wardrobe.restoreGarment("shirt")>>
 	<<elseif _kind eq "clothesStolenBottom" and setup.Wardrobe.isBottomStolen()>>
-		@@.mc-thoughts; Your stolen bottoms, balled up out of sight.@@<br>
+		<<thought>>Your stolen bottoms, balled up out of sight.<</thought>><br>
 		@@.mc-action; You step back into them.@@<br><br>
 		<<run setup.Wardrobe.restoreGarment("bottom")>>
 	<<elseif _toolId>>
 		<<set _toolDef to setup.searchToolDefs[_toolId]>>
-		@@.mc-thoughts; A piece of hunting equipment -- the <<= setup.HuntController.humanizeLootKind(_kind)>>.@@<br>
+		<<thought>>A piece of hunting equipment -- the <<= setup.HuntController.humanizeLootKind(_kind)>>.<</thought>><br>
 		<<image "ui/img/" + _toolDef.iconFile "iconsOnMap">><br>
 		@@.mc-action; You put it in your bag.@@<br><br>
 		<<run setup.HuntController.takeLoot(_kind)>>
@@ -241,9 +243,9 @@
    number (the takeLoot dedupe already prevents re-grabbing the
    same slot, so there's no exploit). */
 <<set _amt to 100 + Math.floor(Math.random() * 201)>>
-@@.mc-thoughts; You feel something stiff wedged in the back of the@@ <<linkappend "@@.usebtn; drawer.@@">><br>
-	@@.mc-thoughts; A roll of bills -- $<<= _amt>>.@@<br>
-	@@.mc-speech; ((if they're still haunting the place, it's not grave robbing...right?))@@<br>
+<<thought>>You feel something stiff wedged in the back of the<</thought>> <<linkappend "@@.usebtn; drawer.@@">><br>
+	<<thought>>A roll of bills -- $<<= _amt>>.<</thought>><br>
+	<<mc>>((if they're still haunting the place, it's not grave robbing...right?))<</mc>><br>
 	<br>
 	@@.mc-action; You pocket the cash.@@<br>
 	+$<<= _amt>><br>
@@ -259,9 +261,9 @@
    setup.HuntController.addEctoplasm, then takeLoot stamps the slot
    collected and emits LOOT_TAKEN with kind="ectoplasm", which the
    achievement bus listens for ('disc.loot.ecto'). */
-@@.mc-thoughts; Something glints from inside the@@ <<linkappend "@@.usebtn; furniture.@@">><br>
-	@@.mc-thoughts; A small glass jar of translucent, faintly glowing slime. Gooey gold -- 10mL of purified ectoplasm.@@<br>
-	@@.mc-speech; ((I wonder what it tastes like?))@@<br>
+<<thought>>Something glints from inside the<</thought>> <<linkappend "@@.usebtn; furniture.@@">><br>
+	<<thought>>A small glass jar of translucent, faintly glowing slime. Gooey gold -- 10mL of purified ectoplasm.<</thought>><br>
+	<<mc>>((I wonder what it tastes like?))<</mc>><br>
 	<br>
 	@@.mc-action; You put the jar in your bag.@@<br>
 	+10mL ectoplasm<br>
@@ -283,11 +285,12 @@
 <<set _kind to setup.HuntController.lootAt(setup.HuntController.searchedFurniture().room, setup.HuntController.searchedFurniture().suffix)>>
 <<set _toolId to setup.FloorPlan.toolIdFromLootKind(_kind)>>
 <<set _toolDef to setup.searchToolDefs[_toolId]>>
-@@.mc-thoughts; You come across a piece of hunting@@ <<linkappend "@@.usebtn; equipment.@@">><br>
+<<thought>>You come across a piece of hunting<</thought>> <<linkappend "@@.usebtn; equipment.@@">><br>
 	<<image "ui/img/" + _toolDef.iconFile "displayCentredImgs">>
 
-	@@.mc-speech; Someone left this behind. It looks like it still works -- <br>
-	I should keep it. It might give me an edge in here.@@<br>
+	<<mc>>Someone left this behind. It looks like it still works -- <br>
+		I should keep it. It might give me an edge in here.
+	<</mc>><br>
 	<br>
 	@@.mc-action; You put the <<= setup.HuntController.humanizeLootKind(_kind)>> in your bag@@<br>
 	<<run setup.HuntController.takeLoot(_kind)>>

@@ -6,11 +6,11 @@
 <<set _randomIndex to random(0, _videoList.length - 1)>>
 <<set _selectedVideo to _videoList[_randomIndex]>>
 <<video _selectedVideo>>
-@@.mc-thoughts; You're walking home together. A gentle breeze tickles your bodies, and only a bathrobe offers a bit of cover from complete nudity@@<br>
-@@.notmc-speech; Oh~ <<= setup.Mc.name()>>, this is weird, but I'm actually starting to like it. <br>
-I'm so turned on, I feel like I could fuck half the city right now@@<br>
-@@.mc-speech; Hehe~ and you called me a slut... How about you walk me home first?@@<br>
-@@.notmc-speech; Yeah, sure.@@<br>
+<<thought>>You're walking home together. A gentle breeze tickles your bodies, and only a bathrobe offers a bit of cover from complete nudity<</thought>><br>
+<<vocal npc>>Oh<</vocal>> <<say>><<= setup.Mc.name()>>, this is weird, but I'm actually starting to like it.<</say>><br>
+<<say>>I'm so turned on, I feel like I could fuck half the city right now<</say>><br>
+<<vocal mc>>Hehe<</vocal>> <<mc>>and you called me a slut... How about you walk me home first?<</mc>><br>
+<<say>>Yeah, sure.<</say>><br>
 <br>
 <<run setup.Wardrobe.loseAllStolen()>>
 @@.backbtn; [[You're finally home|WalkHomeTogether]]@@<br>

@@ -2,30 +2,30 @@
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 	<<video "characters/rescue/ash/1.0.mp4">>
-	@@.mc-thoughts; You slowly start to regain consciousness. Your head hurts, and on top of that, someone is licking you@@<br>
-	@@.mc-speech; It's Ash! Ah~ that hurts~@@<br>
-	@@.notmc-speech;You're my toy for today. If you're a good slut, I'll let you go.@@<br>
-	@@.mc-speech; Oh no, what have I done~@@<br>
-	@@.mc-thoughts; You have no strength left to try to escape, so you decide@@ <<linkappend "@@.usebtn;  to submit.@@">>
+	<<thought>>You slowly start to regain consciousness. Your head hurts, and on top of that, someone is licking you<</thought>><br>
+	<<mc>>It's Ash!<</mc>> <<vocal mc>>Ah<</vocal>> <<mc>>That hurts<</mc>><br>
+	<<say>>You're my toy for today. If you're a good slut, I'll let you go.<</say>><br>
+	<<mc>>Oh no, what have I done<</mc>><br>
+	<<thought>>You have no strength left to try to escape, so you decide<</thought>> <<linkappend "@@.usebtn;  to submit.@@">>
 		<<video "characters/rescue/ash/1.1.mp4">>
-		@@.mc-speech; Ohhhhh fuck~ My pussy! You finger it too hard.@@<br>
-		@@.mc-thoughts; She took out a strapon and started @@
+		<<vocal mc>>Ohhhhh fuck<</vocal>> <<mc>>My pussy! You finger it too hard.<</mc>><br>
+		<<thought>>She took out a strapon and started<</thought>>
 		<<linkappend "@@.mc-thoughtsLink; fucking your mouth with it.@@">>
 			<<video "characters/rescue/ash/1.2.mp4">>
-			@@.mc-speech; Uhhng~ Glp Gulp~@@<br>
-			@@.notmc-speech; Now your ass, fast!@@<br>
-			@@.mc-thoughts; You understand that if you don't submit to her, it will hurt more, so you give your [[asshole|RescueAshPossessed1]] to her.@@<br>
+			<<vocal mc>>Uhhng~ Glp Gulp<</vocal>><br>
+			<<say>>Now your ass, fast!<</say>><br>
+			<<thought>>You understand that if you don't submit to her, it will hurt more, so you give your [[asshole|RescueAshPossessed1]] to her.<</thought>><br>
 		<</linkappend>>
 	<</linkappend>>
 <<elseif _check eq 2>>
 	<<video "characters/rescue/ash/2.0.mp4">>
-	@@.mc-thoughts; You slowly start to regain consciousness. Your head hurts, and on top of that, someone is licking you@@<br>
+	<<thought>>You slowly start to regain consciousness. Your head hurts, and on top of that, someone is licking you<</thought>><br>
 	@@.mc-speech; Mm~ what are you doing...@@<br>
-	@@.mc-thoughts; But she didn't answer. She started playing with your ass, @@<<linkappend "@@.usebtn; spanking it@@">>
+	<<thought>>But she didn't answer. She started playing with your ass,<</thought>><<linkappend "@@.usebtn; spanking it@@">>
 		<<video "characters/rescue/ash/2.1.mp4">>
-		@@.notmc-speech; I think you'll join us today.@@<br>
-		@@.mc-speech; Wha... What?@@<br>
-		@@.mc-thoughts; She threw you on the bed, where another girl was already waiting.@@<br>
-		@@.mc-speech;  Wha... what do you [[want from me...|RescueAshPossessed2]]@@<br>
+		<<say>>I think you'll join us today.<</say>><br>
+		<<mc>>Wha... What?<</mc>><br>
+		<<thought>>She threw you on the bed, where another girl was already waiting.<</thought>><br>
+		<<mc>>Wha... what do you [[want from me...|RescueAshPossessed2]]<</mc>><br>
 	<</linkappend>>
 <</if>>

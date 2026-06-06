@@ -17,9 +17,9 @@
 		<<image _contact.portrait "contactsImages">><br>
 		<<if setup.Time.hours() lte 7>>
 			<<if _contact.isHuntingAlone()>>
-				@@.mc-thoughts; She is currently on a ghost hunt.@@
+				<<thought>>She is currently on a ghost hunt.<</thought>>
 			<<else>>
-				@@.mc-thoughts; She's sleeping/busy@@<br>
+				<<thought>>She's sleeping/busy<</thought>><br>
 			<</if>>
 		<<elseif _contact.isPossessed()>>
 			<<linkreplace "@@.enterbtn;Text her@@">>

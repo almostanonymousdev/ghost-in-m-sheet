@@ -1,28 +1,40 @@
 :: DeliveryManager [nobr] {"position":"1100,1200","size":"100,100"}
 <<image "ui/img/jerry.png" { width: "70%" }>><br>
 <<if setup.Delivery.isFirstVisit()>>
-	@@.mc-thoughts; You step into the manager's office. The man behind the desk is graying all over, settled low in his chair under a body gone heavy and slack. His skin is pale and dry, the color of old paper, and his lips look rough and cracked. His eyes have faded to nothing you'd put a name to. His mouth hangs open a fraction, resting that way like he forgot to close it. He drags his gaze up the length of you and parks on your chest a bit longer than it needs to. His expression barely shifts, giving a hint of a hungry smile. You take a breath and start anyway.@@<br>
+	<<thought>>You step into the manager's office. The man behind the desk is graying all over, settled low in his chair under a body gone heavy and slack. His skin is pale and dry, the color of old paper, and his lips look rough and cracked. His eyes have faded to nothing you'd put a name to. His mouth hangs open a fraction, resting that way like he forgot to close it. He drags his gaze up the length of you and parks on your chest a bit longer than it needs to. His expression barely shifts, giving a hint of a hungry smile. You take a breath and start anyway.<</thought>>
 	<br>
-	@@.mc-speech;Hello, my name is <<= setup.Mc.name()>>, and I'm looking for a job. Perhaps you have something suitable for me?@@<br>
-	@@.notmc-speech; Jerry. <i>He sits up a fraction straighter, which is to say he no longer looks fully collapsed into the chair.</i> You're in luck. We've been short on couriers, and you've got the right energy for it. The customer-facing side. <i>He clears his throat.</i> I think you'd be an asset to the team.@@<br>
+	<<mc>>Hello, my name is <<= setup.Mc.name()>>, and I'm looking for a job. Perhaps you have something suitable for me?<</mc>>
+	<<say "Jerry">>Jerry.<</say>>
+	<<narration>>He sits up a fraction straighter, which is to say he no longer looks fully collapsed into the chair.<</narration>>
+	<<say>>You're in luck. We've been short on couriers, and you've got the right energy for it. The customer-facing side.<</say>>
+	<<narration>>He clears his throat.<</narration>>
+	<<say>>I think you'd be an asset to the team.<</say>>
 
-	@@.mc-speech;Thank you. I'm ready to start. What do I need to do?@@<br>
+	<<mc>>Thank you. I'm ready to start. What do I need to do?<</mc>>
 
-	@@.notmc-speech; Eager. <i>His eyes catch on your mouth for half a second.</i> That's what we like to see. Hours are 08:00 to 20:00, any day. I run a flexible shop here, none of the rigid stuff. You come in when you can, you take what's on the board. We take care of our people.@@<br>
+	<<say "Jerry">>Eager.<</say>>
+	<<narration>>His eyes catch on your mouth for half a second.<</narration>>
+	<<say>>That's what we like to see. Hours are 08:00 to 20:00, any day. I run a flexible shop here, none of the rigid stuff. You come in when you can, you take what's on the board. We take care of our people.<</say>>
 
-	@@.mc-speech;Understood. How will I receive orders?@@<br>
+	<<mc>>Understood. How will I receive orders?<</mc>>
 
-	@@.notmc-speech; The computer thing handles it. Addresses comes through, item list comes through, you handle the rest. The girls — <i>he catches himself</i> — the couriers we have, they don't have any trouble cause they've gotten used to it.@@<br>
+	<<say "Jerry">>The computer thing handles it. Addresses comes through, item list comes through, you handle the rest. The girls —<</say>>
+	<<narration>>he catches himself<</narration>>
+	<<say>>— the couriers we have, they don't have any trouble cause they've gotten used to it.<</say>>
 
-	@@.mc-speech;Got it. How much will I be paid for each order?@@<br>
+	<<mc>>Got it. How much will I be paid for each order?<</mc>>
 
-	@@.notmc-speech; $<<= setup.Delivery.jobMoneySuccessed()>> a successful drop. $<<= setup.Delivery.jobMoneyFailed()>> if it goes sideways. Not life-changing money, but it adds up for someone with the right work ethic. <i>He leans back, hands behind his head, then thinks better of it and folds them on the desk.</i> A lot of people your age don't have that in them anymore. You look like you do.@@<br>
+	<<say "Jerry">>$<<= setup.Delivery.jobMoneySuccessed()>> a successful drop. $<<= setup.Delivery.jobMoneyFailed()>> if it goes sideways. Not life-changing money, but it adds up for someone with the right work ethic.<</say>>
+	<<narration>>He leans back, hands behind his head, then thinks better of it and folds them on the desk.<</narration>>
+	<<say>>A lot of people your age don't have that in them anymore. You look like you do.<</say>>
 
-	@@.mc-speech;I'll do my best. Ready to start.@@<br>
+	<<mc>>I'll do my best. Ready to start.<</mc>>
 
-	@@.notmc-speech; Great. <i>The chair creaks under him.</i> Door's always open. Anything you need, anything that's not clear, come find me. I'd rather you ask than guess. Doesn't have to be on the clock.@@<br>
+	<<say "Jerry">>Great.<</say>>
+	<<narration>>The chair creaks under him.<</narration>>
+	<<say>>Door's always open. Anything you need, anything that's not clear, come find me. I'd rather you ask than guess. Doesn't have to be on the clock.<</say>>
 	<br>
-	@@.mc-thoughts; He didn't ask for ID or a reference. He didn't ask anything except whether I could stand to be in a room with him for ten minutes, and apparently the answer was yes. The money is real. The rest, I can work around.@@<br>
+	<<thought>>He didn't ask for ID or a reference. He didn't ask anything except whether I could stand to be in a room with him for ten minutes, and apparently the answer was yes. The money is real. The rest, I can work around.<</thought>>
 	<br>
 	@@.mc-action; Now you can work as a courier.@@
 	<br>
@@ -30,42 +42,45 @@
 <<elseif not setup.Delivery.isFirstVisit() and previous() isnot "DeliveryMap">>
 	<br>
 	<<if setup.Delivery.hasMetManagerEvent()>>
-		@@.notmc-speech; Oh, <<= setup.Mc.name()>>, come in, don't be shy. I've always got time for you.@@
+		<<say "Jerry">>Oh, <<= setup.Mc.name()>>, come in, don't be shy. I've always got time for you.<</say>>
 	<<else>>
-		@@.notmc-speech;
-		Hello, you're like umm... Susan? Milana? Doesn't matter, I'm a bit busy right now, let's talk later.
-		If you forgot, you can work here from 08:00 to 20:00. Take orders and go ahead. Good luck.@@
+		<<say "Jerry">>Hello, you're like umm... Susan? Milana? Doesn't matter, I'm a bit busy right now, let's talk later. If you forgot, you can work here from 08:00 to 20:00. Take orders and go ahead. Good luck.<</say>>
 	<</if>>
 	<br>
 
 	<<linkreplace "@@.usebtn;Ask about payment@@">>
 		<<if not setup.Delivery.managerBJOnCooldown()>>
-			@@.mc-speech;I wanted to talk about payment. Is there a way to increase it somehow?<br>@@
+			<<mc>>I wanted to talk about payment. Is there a way to increase it somehow?<</mc>>
 			<<if not setup.Delivery.meetsBeautyForManagerFlirt()>>
-				@@.notmc-speech; Um... <i>He looked at me but quickly lowered his head and started flipping through his papers</i><br> I think you just need to work more<br>@@
-				@@.mc-thoughts; I need to catch his attention somehow<br>@@
+				<<say "Jerry">>Um...<</say>>
+				<<narration>>He looked at me but quickly lowered his head and started flipping through his papers.<</narration>>
+				<<say>>I think you just need to work more.<</say>>
+				<<thought>>I need to catch his attention somehow.<</thought>>
 				@@.warningtext; (Req. <<statIcon setup.StatIcon.BEAUTY>> ≥ 35)@@
 			<<else>>
 				<<if setup.Delivery.hasMetManagerEvent()>>
-					@@.notmc-speech;Of course, <<= setup.Mc.name()>>, I think you know how I can help you@@<br>
+					<<say "Jerry">>Of course, <<= setup.Mc.name()>>, I think you know how I can help you.<</say>>
 				<<else>>
-					@@.notmc-speech; Hm...<br>
-					<i>He looked at me and thought about something</i>. <br>
-					I don't think I can do it. But I could offer some part-time work for such a beautiful girl<br><i>He smiled and adjusted his belt</i><br>@@
+					<<say "Jerry">>Hm...<</say>>
+					<<narration>>He looked at me and thought about something.<</narration>>
+					<<say>>I don't think I can do it. But I could offer some part-time work for such a beautiful girl.<</say>>
+					<<narration>>He smiled and adjusted his belt.<</narration>>
 				<</if>>
 				<<if setup.Delivery.canSeduceManager()>>
 					@@.usebtn;[[Try to seduce him|SeduceManager]]@@<br>
-				<<else>>@@.mc-thoughts; Is he asking me to suck him off? No fucking way!<br>@@
+				<<else>>
+					<<thought>>Is he asking me to suck him off? No fucking way!<</thought>>
 					@@.warningtext; (Req. <<statIcon setup.StatIcon.CORRUPTION>> ≥ 2)@@
-					@@.mc-speech;No, I'd better go<br>@@
+					<<mc>>No, I'd better go.<</mc>>
 				<</if>>
 			<</if>>
-		<<else>>@@.notmc-speech; Enough for today, talk to me tomorrow@@
+		<<else>>
+			<<say "Jerry">>Enough for today, talk to me tomorrow.<</say>>
 		<</if>>
 	<</linkreplace>>
 
 <<elseif previous() is "DeliveryMap">>
-	@@.notmc-speech; Here is your hard-earned money for the shift. Not much, but it's something at least.@@ <br>
+	<<say "Jerry">>Here is your hard-earned money for the shift. Not much, but it's something at least.<</say>>
 	<<include "EndShiftDelivery">>
 <</if>>
 <br>
@@ -74,15 +89,15 @@
 
 :: SeduceManager [nobr] {"position":"1100,1300","size":"100,100"}
 <<image "ui/img/jerry.png" { width: "70%" }>><br>
-@@.mc-thoughts; The smell hits first. Menthol rub, scalp grease, the dry mineral edge of paper that's been touched too many times. There's an air freshener on the windowsill that gave up months ago. Under the rest of it, the medicinal note of a man who keeps tubes of things in every drawer.@@<br>
+<<thought>>The smell hits first. Menthol rub, scalp grease, the dry mineral edge of paper that's been touched too many times. There's an air freshener on the windowsill that gave up months ago. Under the rest of it, the medicinal note of a man who keeps tubes of things in every drawer.<</thought>>
 <br>
-@@.mc-thoughts; Three women in two years. Zero men. You'd told yourself the streak was a preference. Then a politics. Then a fact. I guess this is how it ends.@@<br>
+<<thought>>Three women in two years. Zero men. You'd told yourself the streak was a preference. Then a politics. Then a fact. I guess this is how it ends.<</thought>>
 <br>
-@@.mc-thoughts; A poltergeist had you pinned to a wall in the Owaissa house last Tuesday. The wall smelled like wet plaster, the thing on top of you didn't smell like anything, and that you could work with. Ghosts are abstract. They don't have a tongue clumbsily wrigling towards you.@@<br>
+<<thought>>A poltergeist had you pinned to a wall in the Owaissa house last Tuesday. The wall smelled like wet plaster, the thing on top of you didn't smell like anything, and that you could work with. Ghosts are abstract. They don't have a tongue clumbsily wrigling towards you.<</thought>>
 <br>
-@@.mc-thoughts; Heating bill: one-hundred and forty-two dollars. Economy: shambles. The math is the math. The math has been the math since you signed the deed.@@<br>
+<<thought>>Heating bill: one-hundred and forty-two dollars. Economy: shambles. The math is the math. The math has been the math since you signed the deed.<</thought>>
 <br>
-@@.mc-thoughts; Jerry hasn't said anything. His struggling brain can't handle the currently reduced bloodflow.@@<br>
+<<thought>>Jerry hasn't said anything. His struggling brain can't handle the currently reduced bloodflow.<</thought>>
 <br>
 <<if setup.Delivery.canOfferHandjob()>>
 	@@.usebtn;[[Offer him a handjob|DeliveryManagerHandjob]]@@<br>
@@ -104,19 +119,23 @@
 
 :: DeliveryManagerHandjob [event nobr] {"position":"1300,1300","size":"100,100"}
 <<randRangeVideo "scenes/deliveryhub/manager/hj" 1 2 ".mp4">><br>
-@@.notmc-speech; Smart girl. <i>Jerry unbuckles before you've finished closing the door behind you. The belt clanks against the underside of the desk.</i>@@<br>
+<<say "Jerry">>Smart girl.<</say>>
+<<narration>>Jerry unbuckles before you've finished closing the door behind you. The belt clanks against the underside of the desk.<</narration>>
 <br>
-@@.mc-thoughts; You don't look at it. You look at the wall behind the chair, at the cheap framed certificate from a delivery-industry trade group that probably folded a decade ago. There are three of them up there. Same gold-foil seal.@@<br>
+<<thought>>You don't look at it. You look at the wall behind the chair, at the cheap framed certificate from a delivery-industry trade group that probably folded a decade ago. There are three of them up there. Same gold-foil seal.<</thought>>
 <br>
-@@.mc-thoughts; Your hand wraps around it. Warmer than you'd thought. You spit into your palm before you can stop yourself, a body memory from college that you didn't ask to keep.@@<br>
+<<thought>>Your hand wraps around it. Warmer than you'd thought. You spit into your palm before you can stop yourself, a body memory from college that you didn't ask to keep.<</thought>>
 <br>
-@@.notmc-speech; ~Ohhhh, that's it. That's a good girl. Yeah.~ <i>He keeps talking. He doesn't stop talking.</i>@@<br>
+<<vocal npc>>Ohhhh, that's it. That's a good girl. Yeah.<</vocal>>
+<<narration>>He keeps talking. He doesn't stop talking.<</narration>>
 <br>
-@@.mc-thoughts; You don't hear him. You count certificates. One. Two. Three. You start over.@@<br>
+<<thought>>You don't hear him. You count certificates. One. Two. Three. You start over.<</thought>>
 <br>
-@@.notmc-speech; <i>He finishes on the front of his own shirt and doesn't notice.</i> Hnnh. Good girl. Take this. <i>He hands you a folded bill without looking up.</i>@@<br>
+<<narration>>He finishes on the front of his own shirt and doesn't notice.<</narration>>
+<<say "Jerry">>Hnnh. Good girl. Take this.<</say>>
+<<narration>>He hands you a folded bill without looking up.<</narration>>
 <br>
-@@.mc-thoughts; You wipe your hand on the inside of your coat where it won't show. You tell yourself you'll boil the lining later. You won't.@@<br>
+<<thought>>You wipe your hand on the inside of your coat where it won't show. You tell yourself you'll boil the lining later. You won't.<</thought>>
 <br>
 <<set _r to setup.Delivery.managerSceneReward('handjob')>>
 <<addLust _r.lust>>
@@ -126,21 +145,25 @@
 
 :: DeliveryManagerBlowjob [event nobr] {"position":"1300,1350","size":"100,100"}
 <<randRangeVideo "scenes/deliveryhub/manager/bj" 1 3 ".mp4">><br>
-@@.notmc-speech; <i>Jerry stands up like the chair finally let him.</i> Come on, then. Atta girl.@@<br>
+<<narration>>Jerry stands up like the chair finally let him.<</narration>>
+<<say "Jerry">>Come on, then. Atta girl.<</say>>
 <br>
-@@.mc-thoughts; The carpet under your knees is industrial weave, the color of old tea. Someone vacuumed it once, the year it was installed.@@<br>
+<<thought>>The carpet under your knees is industrial weave, the color of old tea. Someone vacuumed it once, the year it was installed.<</thought>>
 <br>
-@@.mc-thoughts; The smell at this height is concentrated. Sweat and the menthol again and something sour you don't want to name. You open before you can think. Thinking ruins it.@@<br>
+<<thought>>The smell at this height is concentrated. Sweat and the menthol again and something sour you don't want to name. You open before you can think. Thinking ruins it.<</thought>>
 <br>
-@@.mc-speech; ~hngh~@@<br>
+<<vocal mc>>hngh<</vocal>>
 <br>
-@@.notmc-speech; ~Atta girl. Ohhhh yeah. Knew you had it in you.~ <i>His hand finds the back of your head. He doesn't push. He just rests there, heavy.</i>@@<br>
+<<vocal npc>>Atta girl. Ohhhh yeah. Knew you had it in you.<</vocal>>
+<<narration>>His hand finds the back of your head. He doesn't push. He just rests there, heavy.<</narration>>
 <br>
-@@.mc-thoughts; Your jaw goes wide. You breathe through your nose and try not to taste anything. Somewhere in the floors above, a phone rings.@@<br>
+<<thought>>Your jaw goes wide. You breathe through your nose and try not to taste anything. Somewhere in the floors above, a phone rings.<</thought>>
 <br>
-@@.mc-thoughts; Your hips shift without permission. You don't know when that started. You file it under <i>deal with later</i>, with everything else.@@<br>
+<<thought>>Your hips shift without permission. You don't know when that started. You file it under <i>deal with later</i>, with everything else.<</thought>>
 <br>
-@@.notmc-speech; ~Hnngh~ <i>He pulls back at the last second and finishes on your collarbone, which is worse.</i> Good. Good. That's enough for today.@@<br>
+<<vocal npc>>Hnngh<</vocal>>
+<<narration>>He pulls back at the last second and finishes on your collarbone, which is worse.<</narration>>
+<<say "Jerry">>Good. Good. That's enough for today.<</say>>
 <br>
 <<set _r to setup.Delivery.managerSceneReward('blowjob')>>
 <<addLust _r.lust>>
@@ -151,30 +174,33 @@
 :: DeliveryManagerSex [event nobr] {"position":"1300,1400","size":"100,100"}
 <<set _startLust to setup.Mc.lust()>>
 <<randRangeVideo "scenes/deliveryhub/manager/sex" 1 2 ".mp4">><br>
-@@.notmc-speech; <i>Jerry steers you toward the couch shoved against the back wall of the office, the one you'd taken for decorative. The cushions are flattened in the exact shape of years of Jerry. He puts a hand on the small of your back and folds you over the armrest.</i> There you go. Atta girl.@@<br>
+<<narration>>Jerry steers you toward the couch shoved against the back wall of the office, the one you'd taken for decorative. The cushions are flattened in the exact shape of years of Jerry. He puts a hand on the small of your back and folds you over the armrest.<</narration>>
+<<say "Jerry">>There you go. Atta girl.<</say>>
 <br>
-@@.mc-thoughts; The armrest hits you across the hips. The fabric is the color of nicotine and feels like it. You plant your hands on the cushion and find the broken springs through the upholstery, two of them, one under each palm.@@<br>
+<<thought>>The armrest hits you across the hips. The fabric is the color of nicotine and feels like it. You plant your hands on the cushion and find the broken springs through the upholstery, two of them, one under each palm.<</thought>>
 <br>
-@@.mc-thoughts; His hands are colder than you'd expected. You think about the woman at the bar in the city, the one who poured you that gin in October and laughed at your earrings. Her hands had been warm. You go there.@@<br>
+<<thought>>His hands are colder than you'd expected. You think about the woman at the bar in the city, the one who poured you that gin in October and laughed at your earrings. Her hands had been warm. You go there.<</thought>>
 <br>
-@@.notmc-speech; ~Yeah. Yeah, you're tight.~ <i>His shirt is bunched against your shoulder blades. The menthol is the whole world.</i> You're a good girl. You know that, right?@@<br>
+<<vocal npc>>Yeah. Yeah, you're tight.<</vocal>>
+<<narration>>His shirt is bunched against your shoulder blades. The menthol is the whole world.<</narration>>
+<<say>>You're a good girl. You know that, right?<</say>>
 <br>
-@@.mc-speech; ~mm~@@<br>
+<<vocal mc>>mm<</vocal>>
 <br>
 <<if _startLust gte 50>>
-	@@.mc-thoughts; Your body decides now -- your preferences treated as no more than an off-hand suggestion. The heat starts low and climbs and your nerve endings do their assigned work without asking what you think of it.@@<br>
+	<<thought>>Your body decides now -- your preferences treated as no more than an off-hand suggestion. The heat starts low and climbs and your nerve endings do their assigned work without asking what you think of it.<</thought>>
 	<br>
 	<<linkreplace "@@.mc-thoughts;~no. no, fuck, no --~@@">>
 		<br>
 		<<randRangeVideo "scenes/deliveryhub/manager/orgasm" 1 2 ".mp4">><br>
-		@@.mc-thoughts; You bite down on the cushion to keep it quiet. It tastes like dust and old smoke and you don't care, because everything else is white noise and a long bright snap behind your eyes. Your knees buckle. The couch springs give with them. And somewhere above the ringing, Jerry is making a sound you will spend the rest of the week trying to unhear.@@<br>
+		<<thought>>You bite down on the cushion to keep it quiet. It tastes like dust and old smoke and you don't care, because everything else is white noise and a long bright snap behind your eyes. Your knees buckle. The couch springs give with them. And somewhere above the ringing, Jerry is making a sound you will spend the rest of the week trying to unhear.<</thought>>
 		<br>
-		@@.mc-thoughts; When you come back to the room, you are still folded over an armrest in a delivery-company office, and Jerry is still inside you, disgustingly self-assured. The math is unchanged.@@<br>
+		<<thought>>When you come back to the room, you are still folded over an armrest in a delivery-company office, and Jerry is still inside you, disgustingly self-assured. The math is unchanged.<</thought>>
 		<br>
 		<<include "DeliveryManagerSexOutro">>
 	<</linkreplace>>
 <<else>>
-	@@.mc-thoughts; Your body decides to participate, in the limited way it can be made to. You hate that about your body. Nerves don't ask if you like the person before they do their job. The couch creaks under both of you on a count you didn't agree to.@@<br>
+	<<thought>>Your body decides to participate, in the limited way it can be made to. You hate that about your body. Nerves don't ask if you like the person before they do their job. The couch creaks under both of you on a count you didn't agree to.<</thought>>
 	<br>
 	<<include "DeliveryManagerSexOutro">>
 <</if>>
@@ -182,9 +208,10 @@
 :: DeliveryManagerSexOutro [nobr] {"position":"1300,1500","size":"100,100"}
 <<linkreplace "@@.mc-thoughts;~just be done with it~@@">>
 	<br>
-	@@.notmc-speech; <i>He finishes with a sound like air leaving a couch cushion. Fitting.</i> Hnnng. Oof. Atta girl.@@<br>
+	<<narration>>He finishes with a sound like air leaving a couch cushion. Fitting.<</narration>>
+	<<say "Jerry">>Hnnng. Oof. Atta girl.<</say>>
 	<br>
-	@@.mc-thoughts; You straighten up. Your knees register a complaint. You pull your jeans up by the belt loops try to keep your mind off the invasion of Jerry's powdery soldiers.@@<br>
+	<<thought>>You straighten up. Your knees register a complaint. You pull your jeans up by the belt loops try to keep your mind off the invasion of Jerry's powdery soldiers.<</thought>>
 	<br>
 	<<set _r to setup.Delivery.managerSceneReward('sex')>>
 	<<addLust _r.lust>>

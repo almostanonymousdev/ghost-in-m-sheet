@@ -11,6 +11,7 @@
 <</switch>>
 <<run setup.Wardrobe.dropWornOuter()>>
 <br>
-@@.mc-speech;Am I not beautiful? Who could harm such a cutie?
-It feels much better, I am ready to [[continue|previous(2)]]@@
+<<mc>>Am I not beautiful? Who could harm such a cutie?
+	It feels much better, I am ready to [[continue|previous(2)]]
+<</mc>>
 <<run setup.Posession.clearHotFlags()>>

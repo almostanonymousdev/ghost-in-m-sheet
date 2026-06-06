@@ -1,17 +1,17 @@
 :: WitchInsideMast [nobr] {"position":"1250,150","size":"100,100"}
 <<randomVideo "characters/witch/1.mp4" "characters/witch/2.mp4">>
-@@.mc-thoughts; She didn't hear the door. She's preoccupied.@@<br>
-@@.mc-thoughts; Khadija. Hand between her legs, eyes closed. You should leave. You don't leave for a second.@@<br>
-@@.mc-thoughts; Get out before she opens them.@@<br>
+<<thought>>She didn't hear the door. She's preoccupied.<</thought>><br>
+<<thought>>Khadija. Hand between her legs, eyes closed. You should leave. You don't leave for a second.<</thought>><br>
+<<thought>>Get out before she opens them.<</thought>><br>
 <<if not setup.Witch.hasStolenKey()>>
-	@@.mc-thoughts; There's a key on the desk. Brass. Familiar shape. House key, by the bow of it.@@<br>
+	<<thought>>There's a key on the desk. Brass. Familiar shape. House key, by the bow of it.<</thought>><br>
 	<<if setup.Witch.canStealKeyFromWitch()>>
 		@@.usebtn;<<linkreplace "Steal the key">>
 			<<run setup.Witch.markKeyFromWitchStolen()>>
-			@@.mc-thoughts; You take it. Your hand decides before your head does. Apparently you're the kind of person who does this now. The drawer slides shut behind your fingers like it doesn't mind.@@
+			<<thought>>You take it. Your hand decides before your head does. Apparently you're the kind of person who does this now. The drawer slides shut behind your fingers like it doesn't mind.<</thought>>
 		<</linkreplace>>@@
 	<<else>>
-		@@.mc-thoughts; Not while she's like that. Not yet. You're not someone who lifts a key off a friend.@@<br>
+		<<thought>>Not while she's like that. Not yet. You're not someone who lifts a key off a friend.<</thought>><br>
 		@@.warningtext; (Req. <<statIcon setup.StatIcon.CORRUPTION>> ≥ 3)@@
 	<</if>>
 <</if>>

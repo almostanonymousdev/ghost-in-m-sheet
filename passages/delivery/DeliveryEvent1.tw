@@ -7,52 +7,52 @@
 <<switch _ev>>
 <<case "burger">>
 	<<deliveryVideo "burgerevent" 5 6>>
-	@@.notmc-speech; Now I'll fuck you, slut@@<br>
+	<<say>>Now I'll fuck you, slut<</say>><br>
 	@@.mc-speech; I don't want this to <<linkappend "ever end">><br>
 		<<deliveryVideo "burgerevent" 7 8>>
-		@@.mc-speech; ~God~ Don't stop please, I'm cumming@@<br>
-		@@.notmc-speech; I'm cumming too@@<br>
+		<<vocal mc>>God<</vocal>> <<mc>>Don't stop please, I'm cumming<</mc>><br>
+		<<say>>I'm cumming too<</say>><br>
 		@@.mc-speechLink; [[Cum|DeliveryEvent2]]@@<br>
 	<</linkappend>>@@
 <<case "pizza">>
 	<<addLust 45>>
 	<<deliveryVideo "pizzaevent" 3>>
 	+45 <<statIcon setup.StatIcon.HEALTH>><br>
-	@@.notmc-speech;Oh, I see you're ready now, nice and wet.@@<br>
-	@@.mc-thoughts; What's happening to me? Why am I starting to like this?@@<br>
+	<<say>>Oh, I see you're ready now, nice and wet.<</say>><br>
+	<<thought>>What's happening to me? Why am I starting to like this?<</thought>><br>
 	@@.notmc-speech;Wait for me here, <<linkappend "I'll be right back">>
 		<<deliveryVideo "pizzaevent" 4>>
-		@@.mc-thoughts; She took the dildo and is now fucking me like a cheap whore. And the worst thing is that I like it. @@<br>
-		@@.notmc-speech;Oh, you are so tight. Do you like the way I fuck you?@@<br>
+		<<thought>>She took the dildo and is now fucking me like a cheap whore. And the worst thing is that I like it.<</thought>><br>
+		<<say>>Oh, you are so tight. Do you like the way I fuck you?<</say>><br>
 		@@.mc-speech; Mm~ No...~m~No@@<br>
-		@@.notmc-speech; Well then [[I'll continue|DeliveryEvent2]]@@
+		<<say>>Well then [[I'll continue|DeliveryEvent2]]<</say>>
 	<</linkappend>>@@
 <<case "package">>
 	<<addLust 45>>
 	<<deliveryLustOverflow>>
 	<<deliveryVideo "packageevent" 3 4>>
-	@@.notmc-speech; Do you like it, slut?@@<br>
+	<<say>>Do you like it, slut?<</say>><br>
 	@@.mc-speech; Oh~Please don't stop~Your cock is so good~@@<br>
 	<<linkreplace "@@.mc-speechLink;Continue@@">>
 		<<addLust 45>>
 		<<deliveryLustOverflow>>
 		<<deliveryVideo "packageevent" 6>>
-		@@.mc-speech; Oh~it feels amazing@@<br>
+		<<vocal mc>>Oh<</vocal>> <<mc>>It feels amazing<</mc>><br>
 		@@.mc-speechLink; [[He's cumming|DeliveryEvent2]]@@
 	<</linkreplace>>
 <<case "papers">>
 	/* Papers' Event1 is terminal: marks the cooldown, awards the
-	   bonus, and sends the player back to the map. */
+		bonus, and sends the player back to the map. */
 	<<run setup.Delivery.markPapersEvent()>>
 	<<addLust 45>>
 	<<deliveryVideo "papersevent" 4 5>>
 	+45 <<statIcon setup.StatIcon.HEALTH>><br>
-	@@.mc-speech; Oh~i'm cumming~@@<br>
+	<<vocal mc>>Oh<</vocal>> <<mc>>I'm cumming<</mc>><br>
 	@@.notmc-speech; On your knees bitch,@@ <<linkappend "@@.notmc-speechLink; quickly@@">><br>
 		<<deliveryVideo "papersevent" 6>>
-		@@.mc-speech; Oh~so much cum@@<br>
-		@@.notmc-speech; Wow, you are the best. I think you deserve a little bonus@@<br>
-		@@.mc-thoughts; I feel like I'm a prostitute. I've probably already made more money with my body than with delivery.@@<br>
+		<<vocal mc>>Oh<</vocal>> <<mc>>So much cum<</mc>><br>
+		<<say>>Wow, you are the best. I think you deserve a little bonus<</say>><br>
+		<<thought>>I feel like I'm a prostitute. I've probably already made more money with my body than with delivery.<</thought>><br>
 		<br>
 		<<deliveryBonus 15>>
 		<br>

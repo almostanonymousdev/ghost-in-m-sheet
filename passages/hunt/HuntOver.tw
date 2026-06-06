@@ -31,20 +31,20 @@
 
 <<image "ui/img/dawn.jpg" { width: "100%" }>>
 <br>
-@@.mc-thoughts; My legs are shaking. I can barely keep my eyes open. I have to leave this place — I'm running on empty.@@<br>
+<<thought>>My legs are shaking. I can barely keep my eyes open. I have to leave this place — I'm running on empty.<</thought>><br>
 
 <<if setup.Wardrobe.hasClothesStolen()>>
-	@@.mc-thoughts; The ghost stripped me earlier; my things are scattered around. I only have the energy to grab one piece before stumbling for the exit.@@<br>
+	<<thought>>The ghost stripped me earlier; my things are scattered around. I only have the energy to grab one piece before stumbling for the exit.<</thought>><br>
 	<<if _forceCover>>
-		@@.mc-thoughts;
-		<<if _canCoverBottom and _canCoverTop>>
-			...and there's no way I'm walking out like this. I have to cover up — top or bottom, something.
-		<<elseif _canCoverBottom>>
-			...and there's no way I'm walking out bottomless. I need something to put on down there.
-		<<else>>
-			...and there's no way I'm walking out topless. I need something to cover my chest.
-		<</if>>
-		@@<br>
+		<<thought>>
+			<<if _canCoverBottom and _canCoverTop>>
+				...and there's no way I'm walking out like this. I have to cover up — top or bottom, something.
+			<<elseif _canCoverBottom>>
+				...and there's no way I'm walking out bottomless. I need something to put on down there.
+			<<else>>
+				...and there's no way I'm walking out topless. I need something to cover my chest.
+			<</if>>
+		<</thought>><br>
 	<</if>>
 	<span id="exhaustionGrab">
 	<<if setup.Wardrobe.isPantiesStolen() and _showBottom>>
@@ -101,11 +101,11 @@
 
 :: HuntOverManual [nobr] {"position":"1600,1350","size":"100,100"}
 <<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_GRACEFUL)>>
-@@.mc-speech; Enough. You've got what you've got. Time to be on the porch instead of in here.@@<br>
+<<mc>>Enough. You've got what you've got. Time to be on the porch instead of in here.<</mc>><br>
 
 <<if setup.Wardrobe.hasClothesStolen()>>
 	<<image "ui/img/confused-img.jpg" "displayCentredImgs">>
-	@@.mc-speech; Christ. It took my clothes. Of course it took my clothes. Do I go back in for them, or just live with what that means.@@<br>
+	<<mc>>Christ. It took my clothes. Of course it took my clothes. Do I go back in for them, or just live with what that means.<</mc>><br>
 	/% Don't clear the stolen-clothes flag here -- the "Return to the
 	house" branch needs FurnitureSearch's hasClothesStolen() guard to
 	still pass so the player can recover the stash. The "Leave without
@@ -137,7 +137,7 @@
 
 :: HuntOverSanity [noreturn nobr] {"position":"1400,1350","size":"100,100"}
 <<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_ASSAULTED)>>
-&emsp;@@.mc-thoughts; Something in you gives. The house tips sideways. The wallpaper goes black before your eyes do.@@<br>
+&emsp;<<thought>>Something in you gives. The house tips sideways. The wallpaper goes black before your eyes do.<</thought>><br>
 @@.enterbtn;<<linkreplace "Next">>
 	<<if setup.ActiveGhost.canUseTentacles()>>
 		<<set _sanityTentacleVids to ["mechanics/tentacles/2.0.mp4", "mechanics/tentacles/1.2.mp4", "mechanics/tentacles/2.2.mp4", "mechanics/tentacles/2.3.mp4", "mechanics/tentacles/2.1.mp4"]>>
@@ -150,7 +150,7 @@
 		<<video "mechanics/sanityover/" + _check + ".mp4">>
 	<</if>>
 	<br>
-	&emsp;@@.mc-thoughts; You come up in pieces. Something's using you. Then a long stretch of not-you. Then a pulse of pleasure that doesn't belong to anyone and a stretch of dark. Your body does its honest job without you in it. You stop tracking. Then you stop.@@<br>
+	&emsp;<<thought>>You come up in pieces. Something's using you. Then a long stretch of not-you. Then a pulse of pleasure that doesn't belong to anyone and a stretch of dark. Your body does its honest job without you in it. You stop tracking. Then you stop.<</thought>><br>
 
 	<<if setup.Ghosts.hasHighPriestess()>>
 		@@.usebtn; [[Next|$return][setup.Ghosts.consumeHighPriestess()]]@@
@@ -171,9 +171,9 @@
 <<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_GRACEFUL)>>
 <<image "ui/img/dawn.jpg" { width: "100%" }>>
 <br>
-@@.mc-thoughts; Dawn. The house quiets like someone hung up. Time to add up what you have and name it.@@<br>
+<<thought>>Dawn. The house quiets like someone hung up. Time to add up what you have and name it.<</thought>><br>
 <<if setup.Wardrobe.hasClothesStolen()>>
-	@@.mc-thoughts; And -- right -- your clothes. You sweep the rooms it stashed them in, dress on the move, and don't look back at the door.@@
+	<<thought>>And -- right -- your clothes. You sweep the rooms it stashed them in, dress on the move, and don't look back at the door.<</thought>>
 	<<if setup.Wardrobe.isPantiesStolen()>><<run setup.Wardrobe.restoreGarment("panties")>><</if>>
 	<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreGarment("bottom")>><</if>>
 	<<if setup.Wardrobe.isShirtStolen()>><<run setup.Wardrobe.restoreGarment("shirt")>><</if>>
@@ -190,9 +190,9 @@
 <<run setup.Hunt.emit(setup.Hunt.Event.HUNT_END_ASSAULTED)>>
 <<if setup.ActiveGhost.canUseTentacles()>>
 	<<set _check to random(0,3)>>
-	@@.mc-thoughts; For a moment, you black out. When you come to, a strange, unsettling feeling lingers -- like someone is close by. Suddenly, movements appear from the shadows, and you notice tentacles. They slowly coil around you, sliding across your skin. You try to resist, but their touches grow more insistent, keeping you captive.@@
+	<<thought>>For a moment, you black out. When you come to, a strange, unsettling feeling lingers -- like someone is close by. Suddenly, movements appear from the shadows, and you notice tentacles. They slowly coil around you, sliding across your skin. You try to resist, but their touches grow more insistent, keeping you captive.<</thought>>
 	<<video "mechanics/tentacles/1." + _check + ".mp4">>
-	@@.mc-thoughts; With each penetration, your breathing grows more uneven, waves of arousal washing over you. You let out an involuntary moan as your body begins to respond to their caresses, the tension inside you building with every second. The excitement intensifies into a pulsing desire that becomes@@ <<linkappend "@@.usebtn; harder and harder to resist.@@">>
+	<<thought>>With each penetration, your breathing grows more uneven, waves of arousal washing over you. You let out an involuntary moan as your body begins to respond to their caresses, the tension inside you building with every second. The excitement intensifies into a pulsing desire that becomes<</thought>> <<linkappend "@@.usebtn; harder and harder to resist.@@">>
 		<<video "mechanics/tentacles/2." + _check + ".mp4">>
 		The tentacles penetrate you more deeply, their movements growing bolder. You give in to them, feeling the white fluid they release flowing <<linkappend "@@.usebtn; out of you.@@">>
 			<<video "mechanics/tentacles/3." + _check + ".mp4">>

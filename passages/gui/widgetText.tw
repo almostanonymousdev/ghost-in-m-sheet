@@ -28,13 +28,13 @@
 		<<set _out to setup.MonkeyPaw.activate("activity")>>
 		<<video _out.video "displayCentredImgs">>
 		@@.mc-speech; <<= _out.narrative>>@@<br>
-		@@.mc-thoughts; Lust increased: +<<= _out.lustDelta>> <<statIcon setup.StatIcon.HEALTH>>@@<br>
-		@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<statIcon setup.StatIcon.SANITY>>@@<br>
+		<<thought>>Lust increased: +<<= _out.lustDelta>> <<statIcon setup.StatIcon.HEALTH>><</thought>><br>
+		<<thought>>Sanity decreased: <<= _out.sanityDelta>> <<statIcon setup.StatIcon.SANITY>><</thought>><br>
 		<<if _out.corrDelta>>
-			@@.mc-thoughts; Corruption banking: +<<= _out.corrDelta>>@@<br>
+			<<thought>>Corruption banking: +<<= _out.corrDelta>><</thought>><br>
 		<</if>>
 		<<if _out.drewGhost>>
-			@@.mc-thoughts; <b>Something is in the room with me now.</b>@@<br>
+			<<thought>><b>Something is in the room with me now.</b><</thought>><br>
 		<</if>>
 		<br>
 		<<monkeyPawTail>>
@@ -44,14 +44,14 @@
 <<widget "trapTheGhost">>
 	<<replace "#wishesCount">>
 		<<set _out to setup.MonkeyPaw.activate("trapTheGhost")>>
-		@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
+		<<thought>><<= setup.MonkeyPaw.wishesLeft()>> wishes left...<</thought>><br><br>
 		@@.mc-speech; <<= _out.narrative>>@@<br>
-		<b>@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<statIcon setup.StatIcon.SANITY>>@@</b><br>
+		<b><<thought>>Sanity decreased: <<= _out.sanityDelta>> <<statIcon setup.StatIcon.SANITY>><</thought>></b><br>
 		<<if _out.corrDelta>>
-			@@.mc-thoughts; Corruption banking: +<<= _out.corrDelta>>@@<br>
+			<<thought>>Corruption banking: +<<= _out.corrDelta>><</thought>><br>
 		<</if>>
 		<<if _out.drewGhost>>
-			@@.mc-thoughts; <b>The ghost is in the room with me now.</b>@@<br>
+			<<thought>><b>The ghost is in the room with me now.</b><</thought>><br>
 		<</if>>
 		<<monkeyPawTail>>
 	<</replace>>
@@ -60,14 +60,14 @@
 <<widget "sanity">>
 	<<replace "#wishesCount">>
 		<<set _out to setup.MonkeyPaw.activate("sanity")>>
-		@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
-		<b>@@.mc-thoughts; Sanity set to <<= _out.sanitySet>> <<statIcon setup.StatIcon.SANITY>> now!@@</b><br>
+		<<thought>><<= setup.MonkeyPaw.wishesLeft()>> wishes left...<</thought>><br><br>
+		<b><<thought>>Sanity set to <<= _out.sanitySet>> <<statIcon setup.StatIcon.SANITY>> now!<</thought>></b><br>
 		@@.mc-speech; <<= _out.narrative>>@@<br>
 		<<if _out.lustDelta>>
-			@@.mc-thoughts; Lust increased: +<<= _out.lustDelta>> <<statIcon setup.StatIcon.HEALTH>>@@<br>
+			<<thought>>Lust increased: +<<= _out.lustDelta>> <<statIcon setup.StatIcon.HEALTH>><</thought>><br>
 		<</if>>
 		<<if _out.corrDelta>>
-			@@.mc-thoughts; Corruption banking: +<<= _out.corrDelta>>@@<br>
+			<<thought>>Corruption banking: +<<= _out.corrDelta>><</thought>><br>
 		<</if>>
 		<<monkeyPawTail>>
 	<</replace>>
@@ -101,14 +101,14 @@
 	<<replace "#wishesCount">>
 		<<set _out to setup.MonkeyPaw.activate("knowledge")>>
 		<<if _out.alreadyUsed>>
-			@@.mc-speech; Nothing happened... I probably won't be able to remove more than one piece of evidence@@<br><br><br>
+			<<mc>>Nothing happened... I probably won't be able to remove more than one piece of evidence<</mc>><br><br><br>
 			@@.backbtn;<<link "Return" `passage()`>>
 			<</link>>@@
 		<<else>>
-			@@.mc-thoughts; <<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br><br>
+			<<thought>><<= setup.MonkeyPaw.wishesLeft()>> wishes left...<</thought>><br><br>
 			@@.mc-speech; <<= _out.narrative>>@@
 			<<if _out.sanityDelta>>
-				<br>@@.mc-thoughts; Sanity decreased: <<= _out.sanityDelta>> <<statIcon setup.StatIcon.SANITY>>@@
+				<br><<thought>>Sanity decreased: <<= _out.sanityDelta>> <<statIcon setup.StatIcon.SANITY>><</thought>>
 				<<refreshMeter 'sanity'>>
 			<</if>>
 			<<if _out.goto>>

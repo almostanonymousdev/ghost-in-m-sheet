@@ -2,10 +2,10 @@
 <<set _check to random(1,2)>>
 <<if _check eq 1>>
 	<<video "characters/rescue/julia/1.0.mp4">>
-	@@.mc-thoughts; As soon as you got close to her, she wrapped her arms around you and started touching your ass.@@<br>
-	@@.mc-speech; Hey, what are you doing...@@<br>
-	@@.notmc-speech; You're so tiny, I like you.@@<br>
-	@@.mc-speech;What?...@@<br>
+	<<thought>>As soon as you got close to her, she wrapped her arms around you and started touching your ass.<</thought>><br>
+	<<mc>>Hey, what are you doing...<</mc>><br>
+	<<say>>You're so tiny, I like you.<</say>><br>
+	<<mc>>What?...<</mc>><br>
 	@@.mc-thoughts; With a strong push, she <<linkappend "shoved you down onto the bed.">>
 		<<video "characters/rescue/julia/1.1.mp4">>
 		@@.mc-thoughts; Every time you tried to get up, she slapped your ass hard.@@<br>
@@ -15,29 +15,30 @@
 	<</linkappend>>@@
 <<elseif _check eq 2>>
 	<<image "characters/rescue/julia/2.0.jpg" { width: "100%" }>>
-	@@.mc-thoughts; You slowly regain consciousness, your head throbbing with pain, and the first thing you feel is the tight ropes binding your wrists. You try to move, but your hands and legs are tied up. Flashes of memory come back to you: you came here to save <<= setup.MissingWomen.currentRescueGirl()>>. But something went wrong. <br>@@
-	@@.mc-speech; <<= setup.MissingWomen.currentRescueGirl()>>! What the fuck...@@<br>
-	@@.mc-thoughts; She came up to you and started slapping@@ <<linkappend "@@.usebtn; your pussy@@">>
+	<<thought>>You slowly regain consciousness, your head throbbing with pain, and the first thing you feel is the tight ropes binding your wrists. You try to move, but your hands and legs are tied up. Flashes of memory come back to you: you came here to save <<= setup.MissingWomen.currentRescueGirl()>>. But something went wrong. <br><</thought>>
+	<<mc>><<= setup.MissingWomen.currentRescueGirl()>>! What the fuck...<</mc>><br>
+	<<thought>>She came up to you and started slapping<</thought>> <<linkappend "@@.usebtn; your pussy@@">>
 		<<video "characters/rescue/julia/2.1.mp4">>
-		@@.mc-speech;AHhh~ no~ don't do that@@<br>
-		@@.notmc-speech;Of course, I'm sorry, I won't@@<br>
-		@@.mc-thoughts; She left, but came back with a strapon@@<br>
+		<<vocal mc>>AHhh<</vocal>> <<mc>>No—don't do that<</mc>><br>
+		<<say>>Of course, I'm sorry, I won't<</say>><br>
+		<<thought>>She left, but came back with a strapon<</thought>><br>
 		<<linkappend "@@.usebtn; Oh fuck@@">>
 			<span id="rescueJuliaPossessed">
 			<<video "characters/rescue/julia/2.2.mp4">></span>
-			@@.mc-thoughts; She started fucking @@
+			<<thought>>She started fucking<</thought>>
 			<<link "@@.usebtn; your pussy.@@">>
 				<<replace "#rescueJuliaPossessed">>
 					<<videoToggle "characters/rescue/julia/2.3.mp4" "characters/rescue/julia/2.2.mp4">>
 				<</replace>>
 			<</link>>
-			@@.mc-speech; Oh... im dripping wet right noooow<br>
-			Uuuuwhhh..@@<<linkappend "@@.usebtn; Im about  to...@@">>
+			<<mc>>Oh... im dripping wet right noooow<br>
+				Uuuuwhhh..
+			<</mc>><<linkappend "@@.usebtn; Im about  to...@@">>
 				<<video "characters/rescue/julia/2.4.mp4">>
 
-				@@.mc-thoughts; You moan loudly and cum.@@<br>
-				@@.mc-speech; The pleasure is hitting me directly in the head@@<br>
-				@@.mc-thoughts; The world before your eyes begins to disappear and you fall asleep.@@<br><br>
+				<<thought>>You moan loudly and cum.<</thought>><br>
+				<<mc>>The pleasure is hitting me directly in the head<</mc>><br>
+				<<thought>>The world before your eyes begins to disappear and you fall asleep.<</thought>><br><br>
 				@@.backbtn; [[Wake up|Church][setup.Time.addHours(6)]]@@<br>
 			<</linkappend>>
 		<</linkappend>>

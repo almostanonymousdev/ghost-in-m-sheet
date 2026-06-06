@@ -5,11 +5,11 @@
 
 <span id="wishesCount">
 <<if not setup.MonkeyPaw.hasWishes()>>
-	@@.mc-speech; It seems that I have no more wishes left...@@<br>
+	<<mc>>It seems that I have no more wishes left...<</mc>><br>
 <<else>>
-	@@.mc-thoughts; <b>Hmm...What should I wish for?</b> <br><<= setup.MonkeyPaw.wishesLeft()>> wishes left...@@<br>
+	<<thought>><b>Hmm...What should I wish for?</b> <br><<= setup.MonkeyPaw.wishesLeft()>> wishes left...<</thought>><br>
 	<<if setup.MonkeyPaw.guideStage() eq setup.MonkeyPawGuide.NOT_ASKED>>
-		@@.mc-speech; I need to be extremely careful... Maybe I should ask the witch how to use it? I think she could help me.@@
+		<<mc>>I need to be extremely careful... Maybe I should ask the witch how to use it? I think she could help me.<</mc>>
 	<</if>>
 
 	<br><br>
@@ -20,7 +20,7 @@
 					<<monkeyPawWish _w.widget>>
 				<</linkreplace>>
 				<<if setup.MonkeyPaw.isEffectKnown(_w.id)>>
-					@@.mc-thoughts; <<= setup.MonkeyPaw.describe(_w.id)>>@@<br>
+					<<thought>><<= setup.MonkeyPaw.describe(_w.id)>><</thought>><br>
 				<</if>>
 				<br>
 			<</capture>>
@@ -46,7 +46,7 @@
 				<<monkeyPawWish setup.MonkeyPaw.rollAnything().widget>>
 			<<else>>
 				<<replace "#falseMonkeyPaw">>
-					@@.mc-speech; Nothing happened...@@
+					<<mc>>Nothing happened...<</mc>>
 				<</replace>>
 			<</if>>
 		<</link>><br>

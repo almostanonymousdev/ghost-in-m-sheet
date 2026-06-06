@@ -6,7 +6,7 @@
 <<image "ui/img/" + _img { width: "90%" }>><br>
 @@.location; _address@@<br>
 <br>
-@@.mc-thoughts;What should I deliver here?@@<br>
+<<thought>>What should I deliver here?<</thought>><br>
 <br>
 <div class=deliverywrapper>
 <<for _slot to 1; _slot lte 3; _slot++>>
@@ -42,7 +42,7 @@
 	<<image "ui/img/deliverygirlsad.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
 	<<run setup.Delivery.addJobFailEarnings()>>
 	<<deliverySorry>><br>
-	@@.mc-speech; Damn, I must have made a mistake.@@<br>
+	<<mc>>Damn, I must have made a mistake.<</mc>><br>
 	<br>
 	<br>
 	@@.backbtn;[[Back|DeliveryMap]] @@
@@ -76,7 +76,7 @@ Earned during the shift: <<= setup.Delivery.earnedMoney()>> $
 	<<set _address to _house.substr(0, _sp) + ", " + _house.substr(_sp + 1)>>
 	<<image "ui/img/" + _img { width: "90%" }>><br>
 	@@.location; _address@@<br><br>
-	@@.mc-thoughts; No one here ordered anything from me.@@<br>
+	<<thought>>No one here ordered anything from me.<</thought>><br>
 	<br>
 	@@.backbtn;[[Back|DeliveryMap]]@@
 <</if>>

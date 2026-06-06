@@ -6,7 +6,7 @@
 <<widget "washClean">>
 	<<run setup.Mc.setDirty(0)>>
 	<<wipeMakeup _args[0]>>
-	@@.mc-speech; Nice and clean again@@<br>
+	<<mc>>Nice and clean again<</mc>><br>
 	<br>
 	@@.backbtn;[[Back|Bathroom]]@@
 	<<done>>

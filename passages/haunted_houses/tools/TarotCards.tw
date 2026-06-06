@@ -11,7 +11,7 @@
 					<<set _tempCard to setup.tarotDeck[random(0, 8)]>>
 					<div class="fadeInScale">
 					<<image _tempCard.image "displayCentredImgs fadeInScale">></div>
-					@@.mc-speech; Oh... something's about to happen... but what...@@
+					<<mc>>Oh... something's about to happen... but what...<</mc>>
 					<<done>>
 						<<run $(".fadeInScale").addClass("tarotCardsShow")>>
 						<<addclass ".tarotCardHidden" "disabled-link">>
@@ -19,7 +19,7 @@
 					<<timed 1s>>
 						<<replace #tarotCard>>
 							<<image _chosen.image "displayCentredImgs fadeInScaleFool">>
-							@@.mc-speech; Um, did it just... change? Is this supposed to be a joke? @@
+							<<mc>>Um, did it just... change? Is this supposed to be a joke?<</mc>>
 						<</replace>>
 						<<done>>
 							<<run $(".fadeInScaleFool").addClass("tarotCardsShow")>>
@@ -30,7 +30,7 @@
 					<div class="fadeInScale">
 					<<image _chosen.image "displayCentredImgs">>
 					</div>
-					@@.mc-speech; Oh... something's about to happen... but what...?@@<br>
+					<<mc>>Oh... something's about to happen... but what...?<</mc>><br>
 					<<done>>
 						<<run $(".fadeInScale").addClass("tarotCardsShow")>>
 						<<addclass ".tarotCardHidden" "disabled-link">>
@@ -49,7 +49,7 @@
 		<<else>>
 			<<replace "#tarotCardsEnd">>
 				<br>
-				@@.mc-thoughts; There's no cards left @@<br>
+				<<thought>>There's no cards left<</thought>><br>
 				<<run setup.Tarot.markTarotSpent()>>
 			<</replace>>
 		<</if>>

@@ -9,7 +9,7 @@
 <<deliveryEventChoose _ev>>
 	<<switch _ev>>
 	<<case "burger">>
-		@@.notmc-speech; Such a sweet girl, you're probably tired, do you want to come in and relax a little?@@<br>
+		<<say>>Such a sweet girl, you're probably tired, do you want to come in and relax a little?<</say>><br>
 		<<linkreplace "@@.mc-speechLink; You see something that looks like weed in his hand. Yes, it's definitely weed.@@">>
 			<<image "ui/img/weed.jpg" { style: "max-width: 50%; height: auto; display: block; margin: 0 auto;" }>>
 			<<if setup.Delivery.canAcceptBurgerWeed()>>
@@ -19,43 +19,43 @@
 			<</if>>
 		<</linkreplace>>
 	<<case "pizza">>
-		@@.notmc-speech; The pizza box looks dented... Please, open it, I want to make sure everything is okay.@@<br>
+		<<say>>The pizza box looks dented... Please, open it, I want to make sure everything is okay.<</say>><br>
 		@@.mc-speech;<<linkreplace " Umm... yeah sure">>
 			<<image "scenes/deliveryhub/pizzaevent/failed.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>><br>
-			@@.notmc-speech; Ah-ha! I knew it. I'm not going to pay for it.@@<br>
+			<<say>>Ah-ha! I knew it. I'm not going to pay for it.<</say>><br>
 			<<if not setup.Delivery.canAcceptPizzaDeal()>>
-				@@.mc-thoughts; She's right, it's my fault. I guess I was unlucky@@ <<deliveryCorrReq 3>><br><br>
+				<<thought>>She's right, it's my fault. I guess I was unlucky<</thought>> <<deliveryCorrReq 3>><br><br>
 				<<deliveryTrackCorrect>>
 				@@.backbtn;[[Back|DeliveryMap]]@@
 			<<else>>
-				@@.mc-thoughts; Fuck! I really need the money. Maybe she'll take pity on me and still pay?@@<br>
+				<<thought>>Fuck! I really need the money. Maybe she'll take pity on me and still pay?<</thought>><br>
 				@@.mc-speech;[[Tell her that you need money|DeliveryEventStart]]@@ or @@.mc-speech;[[Nah, Just say sorry and leave|DeliveryMap][setup.Delivery.incrementCorrectThisShift()]]@@<br>
 			<</if>>
 		<</linkreplace>>@@
 	<<case "package">>
-		@@.notmc-speech; You are late@@<br>
+		<<say>>You are late<</say>><br>
 		<<linkreplace "@@.usebtn;Try to apologize@@">>
-			@@.notmc-speech; I understand, no problem. Listen, maybe you want to earn a little more money?@@<br>
+			<<say>>I understand, no problem. Listen, maybe you want to earn a little more money?<</say>><br>
 			<<if not setup.Delivery.canAcceptPackageDeal()>>
-				@@.mc-speech; That sounds strange, I'd rather decline@@ <<deliveryCorrReq 3>><br><br>
+				<<mc>>That sounds strange, I'd rather decline<</mc>> <<deliveryCorrReq 3>><br><br>
 				@@.backbtn;[[Back|DeliveryMap][setup.Delivery.markDeliveryFailed()]]@@
 			<<else>>
-				@@.mc-thoughts; He's definitely hinting at sex, should I agree?@@<br>
+				<<thought>>He's definitely hinting at sex, should I agree?<</thought>><br>
 				@@.mc-speech;[[Agree|DeliveryEventStart]]@@ or @@.mc-speech;[[Nah, i have to go|DeliveryMap][setup.Delivery.markDeliveryFailed()]]@@<br>
 			<</if>>
 		<</linkreplace>>
 	<<case "papers">>
-		@@.notmc-speech; Yes, put them on the sofa@@<br>
+		<<say>>Yes, put them on the sofa<</say>><br>
 		@@.mc-speech;<<linkreplace "Sure, no problem">>
 			<<addLust 15>>
 			<<image "scenes/deliveryhub/papersevent/2.jpg" { style: "max-width: 100%; height: auto; display: block; margin: 0 auto;" }>>
-			@@.mc-thoughts; I think he's staring at my butt, what a pervert@@<br>
+			<<thought>>I think he's staring at my butt, what a pervert<</thought>><br>
 			+15 <<statIcon setup.StatIcon.HEALTH>><br>
 			<<if not setup.Delivery.papersInitialLustHighEnough()>>
-				@@.mc-speech; Done. I have to go, bye.@@ <<deliveryLustReq 30>><br><br>
+				<<mc>>Done. I have to go, bye.<</mc>> <<deliveryLustReq 30>><br><br>
 				@@.backbtn;[[Back|DeliveryMap]]@@<br>
 			<<else>>
-				@@.mc-speech; Do you like it?@@<br>
+				<<mc>>Do you like it?<</mc>><br>
 				@@.notmc-speech; Yea~I mean, I don't understand what you mean...<br>
 				Sorry, you have a nice ass, maybe I can touch it? @@<br>
 				@@.mc-speech;[[Just a touch|DeliveryEventStart]]@@ or @@.mc-speech;[[Nah, i have to go|DeliveryMap][setup.Delivery.markDeliveryFailed()]]@@<br>

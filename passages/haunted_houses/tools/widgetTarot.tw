@@ -7,9 +7,9 @@
 <<widget "tarotPassion">>
 	<<timed 2s>>
 		<<randRangeVideo "mechanics/cursedpossessions/passion" 1 4 ".mp4">>
-		@@.mc-speech; Ah~ I'm getting so wet down there... mmm. @@<br>
-		@@.mc-thoughts; Lust increased: +15 <<statIcon setup.StatIcon.HEALTH>>@@<br>
-		@@.mc-thoughts; Sanity decreased: -15 <<statIcon setup.StatIcon.SANITY>>@@<br>
+		<<vocal mc>>Ah<</vocal>> <<mc>>I'm getting so wet down there... mmm.<</mc>><br>
+		<<thought>>Lust increased: +15 <<statIcon setup.StatIcon.HEALTH>><</thought>><br>
+		<<thought>>Sanity decreased: -15 <<statIcon setup.StatIcon.SANITY>><</thought>><br>
 		<<addSanity -15>>
 		<<addLust 15>>
 		<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
@@ -19,10 +19,10 @@
 <<widget "tarotPulse">>
 	<<timed 2s>>
 		<<randRangeVideo "mechanics/cursedpossessions/pulse" 1 4 ".mp4">>
-		@@.mc-speech; My... oh~ my little asshole is pulsating so hard... <br>
-		Somehow, I feel much better after that...@@<br>
-		@@.mc-thoughts; Lust decreased: -15 <<statIcon setup.StatIcon.HEALTH>>@@<br>
-		@@.mc-thoughts; Sanity increased: +15 <<statIcon setup.StatIcon.SANITY>>@@<br>
+		<<mc>>My... oh—my little asshole is pulsating so hard...<</mc>><br>
+		<<mc>>Somehow, I feel much better after that...<</mc>><br>
+		<<thought>>Lust decreased: -15 <<statIcon setup.StatIcon.HEALTH>><</thought>><br>
+		<<thought>>Sanity increased: +15 <<statIcon setup.StatIcon.SANITY>><</thought>><br>
 		<<addSanity 15>>
 		<<addLust -15>>
 		<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
@@ -30,7 +30,7 @@
 <</widget>>
 
 <<widget "tarotOblivion">>
-	@@.mc-speech; It's... all going dark... I... can't... hold on... @@<br>
+	<<mc>>It's... all going dark... I... can't... hold on...<</mc>><br>
 	@@.enterbtn; <<link "Let go" `setup.HuntController.huntOverPassage("sanity")`>>
 	<</link>>@@
 <</widget>>
@@ -38,7 +38,7 @@
 <<widget "tarotKnowledge">>
 	<<timed 2s>>
 		<<run setup.HuntController.consumeKnowledgeEvidence()>>
-		@@.mc-speech; Knowledge? Hmm... interesting, that should be useful, right? @@<br>
+		<<mc>>Knowledge? Hmm... interesting, that should be useful, right?<</mc>><br>
 	<</timed>>
 <</widget>>
 
@@ -46,7 +46,7 @@
 	<<timed 2s>>
 		<<randRangeVideo "mechanics/cursedpossessions/power" 1 3 ".mp4">>
 		<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
-		@@.mc-speech; Wow, I can feel power surging through me! Oh, I'm ready to take on anything! @@<br>
+		<<mc>>Wow, I can feel power surging through me! Oh, I'm ready to take on anything!<</mc>><br>
 		@@.mc-thoughts; Energy increased: +5 <<statIcon setup.StatIcon.ENERGY>>@@<br>
 		<<addEnergy 5>>
 		<<addFit 1>>
@@ -56,17 +56,17 @@
 <<widget "tarotWhore">>
 	<<timed 2s>>
 		<<randRangeVideo "mechanics/cursedpossessions/whore" 1 6 ".mp4">>
-		@@.mc-speech; Damn, I can feel this affecting my body... everything's so sensitive, and some parts feel... bigger... @@<br>
+		<<mc>>Damn, I can feel this affecting my body... everything's so sensitive, and some parts feel... bigger...<</mc>><br>
 		<<run setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 50)>>
 	<</timed>>
 <</widget>>
 
 <<widget "tarotDeath">>
-	@@.mc-speech; This can't be a good card. Oh no, I'm scared...I need to hide somewhere!@@<br>
+	<<mc>>This can't be a good card. Oh no, I'm scared...I need to hide somewhere!<</mc>><br>
 	@@.enterbtn; <<link "Hide" "GhostProwlEvent">>
 	<</link>>@@
 	/* Once Death is drawn, Back and "Pull a card" both lead straight to
-	   the caught-during-prowl ending — only "Hide" escapes. */
+		the caught-during-prowl ending — only "Hide" escapes. */
 	<<replace "#tarotCardsEnd">>
 		<<link "@@.usebtn;Pull a card@@" `setup.HuntController.huntCaughtPassage()`>>
 		<</link>>
@@ -78,13 +78,13 @@
 <</widget>>
 
 <<widget "tarotPossession">>
-	@@.mc-speech; Oh fuck.@@<br>
+	<<mc>>Oh fuck.<</mc>><br>
 	@@.enterbtn; <<link "Give in" `setup.HuntController.possessionPassage()`>>
 	<</link>>@@
 	/* Once Possession is drawn, "Pull a card" and Back both lead straight
-	   to the possession outcome -- only "Give in" advances directly. Without
-	   this, the timed re-enable on .tarotCardHidden lets the player keep
-	   drawing past the possession and then exit the deck normally. */
+		to the possession outcome -- only "Give in" advances directly. Without
+		this, the timed re-enable on .tarotCardHidden lets the player keep
+		drawing past the possession and then exit the deck normally. */
 	<<replace "#tarotCardsEnd">>
 		<<link "@@.usebtn;Pull a card@@" `setup.HuntController.possessionPassage()`>>
 		<</link>>
@@ -97,7 +97,7 @@
 
 <<widget "tarotHighpriestess">>
 	<<timed 2s>>
-		@@.mc-speech; Looks like I'm still alive, and no one's about to attack me. I guess things aren't so bad. @@<br>
+		<<mc>>Looks like I'm still alive, and no one's about to attack me. I guess things aren't so bad.<</mc>><br>
 		<<run setup.Ghosts.setHighPriestess(true)>>
 	<</timed>>
 <</widget>>

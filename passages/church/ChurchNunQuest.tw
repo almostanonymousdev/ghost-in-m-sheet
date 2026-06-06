@@ -2,40 +2,42 @@
 <<image "characters/rescue/rain.jpg" { class: "displayCentredImgs", width: "50%" }>><br>
 <<if not setup.Church.hasMetRain()>>
 	<<run setup.Church.initRainIfNeeded()>>
-	@@.notmc-speech; You came. Sit.@@<br>
-	@@.mc-thoughts; She's already sitting. There's nowhere else to sit. You stand.@@<br>
-	@@.notmc-speech; I'm Rain. Khadija sent you, so we'll skip the part where I explain what I do.@@<br>
-	@@.mc-speech; She said you knew her?@@<br>
-	@@.notmc-speech; She wore this collar before I did. We don't talk about it.@@<br>
-	@@.mc-speech; Is there an order? Could I join?@@<br>
-	@@.notmc-speech; Ask me in six months. If you're still alive.@@<br>
-	@@.mc-thoughts; She doesn't blink when she says it. You're not sure she blinks at all.@@<br>
-	@@.mc-speech; The missing girls?@@<br>
-	@@.notmc-speech; Board's outside, left of the door. Posters with names and pictures. <em><b>I refresh it at 18:00 every day</b></em>, after I hear which ones came home. Take a poster, and that's your assignment.<br><br>
-	They get taken on <em><b>Owaissa or Elm</b></em>, then they end up <em><b>south, in the abandoned houses</b></em>. They don't walk there themselves. You can sweep the south door to door and burn a day on it, or you can <em><b>start on Owaissa or Elm and look for what points you to which house in the south</b></em>. Pick whichever you can afford.<br><br>
-	<em><b>You have until 18:00 the next day.</b></em> After that I send hunters who can actually get her out, so don't be later than that.<br><br>
-	<em><b>The longer she's down there, the less of her is left to bring back. Take holy water. It's free.</b></em>@@<br>
-	@@.mc-speech; Got it.@@<br>
+	<<say>>You came. Sit.<</say>><br>
+	<<thought>>She's already sitting. There's nowhere else to sit. You stand.<</thought>><br>
+	<<say>>I'm Rain. Khadija sent you, so we'll skip the part where I explain what I do.<</say>><br>
+	<<mc>>She said you knew her?<</mc>><br>
+	<<say>>She wore this collar before I did. We don't talk about it.<</say>><br>
+	<<mc>>Is there an order? Could I join?<</mc>><br>
+	<<say>>Ask me in six months. If you're still alive.<</say>><br>
+	<<thought>>She doesn't blink when she says it. You're not sure she blinks at all.<</thought>><br>
+	<<mc>>The missing girls?<</mc>><br>
+	<<say>>Board's outside, left of the door. Posters with names and pictures. <em><b>I refresh it at 18:00 every day</b></em>, after I hear which ones came home. Take a poster, and that's your assignment.<br><br>
+		They get taken on <em><b>Owaissa or Elm</b></em>, then they end up <em><b>south, in the abandoned houses</b></em>. They don't walk there themselves. You can sweep the south door to door and burn a day on it, or you can <em><b>start on Owaissa or Elm and look for what points you to which house in the south</b></em>. Pick whichever you can afford.<br><br>
+		<em><b>You have until 18:00 the next day.</b></em> After that I send hunters who can actually get her out, so don't be later than that.<br><br>
+		<em><b>The longer she's down there, the less of her is left to bring back. Take holy water. It's free.</b></em>
+	<</say>><br>
+	<<mc>>Got it.<</mc>><br>
 	<br>
 	@@.mc-action; Now I can assist Rain in the search for the missing girls.@@<br>
 <</if>>
 <<run setup.Church.clearRescueClue()>>
 <<if setup.MissingWomen.rescueQuestStage() eq 2>>
-	@@.notmc-speech; This is bad, I'll have to send an experienced ghost hunter to search for her, even though I have very few people available.@@<br>
+	<<say>>This is bad, I'll have to send an experienced ghost hunter to search for her, even though I have very few people available.<</say>><br>
 	<<if setup.Church.relationshipWithRain() eq 0>>
 	<<else>>
 		<<run setup.Church.adjustRainRelationship(-1)>>
-		@@.mc-thoughts; Your relationship with Rain has decreased - <<= setup.Church.relationshipWithRain()>>.@@
+		<<thought>>Your relationship with Rain has decreased - <<= setup.Church.relationshipWithRain()>>.<</thought>>
 	<</if>>
 <<elseif setup.MissingWomen.rescueQuestStage() eq 3>>
-	@@.notmc-speech;Oh, <<= setup.Mc.name()>>, I've already been informed that you found our girl, thank you so much. You've been a great help to me, thank you.<br>@@
+	<<say>>Oh, <<= setup.Mc.name()>>, I've already been informed that you found our girl, thank you so much. You've been a great help to me, thank you.<br><</say>>
 	<<if setup.Church.upgradeSpiritboxReward()>>
-		@@.notmc-speech;I hope you'll be able to keep helping us. <br>
-		I don't have anything to give you in return for your help right now, but maybe I can repay you somehow later.@@<br>
+		<<say>>I hope you'll be able to keep helping us. <br>
+			I don't have anything to give you in return for your help right now, but maybe I can repay you somehow later.
+		<</say>><br>
 		@@.mc-action; You get a lvl 3 Spiritbox @@<<image "ui/img/spiritbox.png" { style: "max-width:5%" }>><br><br>
 	<</if>>
 	<<run setup.Church.adjustRainRelationship(1)>>
-	@@.mc-thoughts; Your relationship with Rain has increased - <<= setup.Church.relationshipWithRain()>> now!@@<br>
+	<<thought>>Your relationship with Rain has increased - <<= setup.Church.relationshipWithRain()>> now!<</thought>><br>
 <</if>>
 <br><br>
 <<done>>

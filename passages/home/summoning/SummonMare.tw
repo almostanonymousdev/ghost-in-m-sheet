@@ -1,12 +1,12 @@
 :: SummonMare [nobr] {"position":"600,2900","size":"100,100"}
 <<video "mechanics/exorcism/mare1.mp4">>
-@@.mc-thoughts; Through your sleep, you sense someone.@@
+<<thought>>Through your sleep, you sense someone.<</thought>>
 <<linkappend "@@.usebtn; watching you@@">>
 
 	<span id ="summonMare">
 	<<video "mechanics/exorcism/mare2.mp4">></span>
 	<<set _videoIndex to 2>>
-	@@.mc-thoughts; You wake up to the exquisite feeling of a tongue gently and insistently @@
+	<<thought>>You wake up to the exquisite feeling of a tongue gently and insistently<</thought>>
 	<<link "@@.usebtn; lapping at your pussy@@">>
 		<<set _videoIndex to (_videoIndex) % 3 +2>>
 		<<replace "#summonMare">>
@@ -14,11 +14,11 @@
 		<</replace>>
 	<</link>>
 
-	@@.mc-thoughts; sending electric waves of pleasure through your body. You're completely paralyzed, unable to move, but the sensations are so overwhelmingly good that you squirm in place, your moans echoing in the quiet room.@@<br>
-	@@.mc-speech; More... oh, God, more~@@<br>
-	@@.mc-thoughts; Your voice breaking with desire as the tongue masterfully teases you. The sensation is maddening, pushing you@@ <<linkappend "@@.usebtn; closer and closer to the edge@@">>
+	<<thought>>sending electric waves of pleasure through your body. You're completely paralyzed, unable to move, but the sensations are so overwhelmingly good that you squirm in place, your moans echoing in the quiet room.<</thought>><br>
+	<<mc>>More... oh, God,<</mc>> <<vocal mc>>more<</vocal>><br>
+	<<thought>>Your voice breaking with desire as the tongue masterfully teases you. The sensation is maddening, pushing you<</thought>> <<linkappend "@@.usebtn; closer and closer to the edge@@">>
 		<<video "mechanics/exorcism/mare5.mp4">>
-		@@.mc-thoughts; Your body is rocked by an orgasm, and you pass out, falling back into sleep.@@<br><br>
+		<<thought>>Your body is rocked by an orgasm, and you pass out, falling back into sleep.<</thought>><br><br>
 		@@.backbtn; [[You pass out|CityMapPossessed][setup.SpecialEvent.setMareEventStart(0)]]@@<br>
 	<</linkappend>>
 <</linkappend>>

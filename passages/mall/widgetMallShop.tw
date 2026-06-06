@@ -23,7 +23,7 @@ setup.notPurchased = function(varName) {
 				<<run setup.Mc.removeMoney(_price)>>
 			<</link>>@@<br>
 		<</capture>>
-	<<else>>@@.mc-thoughts; I don't have enough money@@
+	<<else>><<thought>>I don't have enough money<</thought>>
 	<</if>>
 	<span class="subtitleAmount">@@.mc-thoughts; <<= _ownedText.replace("{n}", State.variables[_varName] || 0)>>@@</span>
 	</div>
@@ -49,7 +49,7 @@ setup.notPurchased = function(varName) {
 					<<run setup.Mc.removeMoney(_price)>>
 				<</link>>@@<br>
 			<</capture>>
-		<<else>>@@.mc-thoughts; I don't have enough money@@
+		<<else>><<thought>>I don't have enough money<</thought>>
 		<</if>>
 	<</if>>
 	</div>
@@ -99,9 +99,9 @@ setup.notPurchased = function(varName) {
 						<<run setup.Mc.removeMoney(_price)>>
 					<</link>>@@<br>
 				<</capture>>
-			<<else>>@@.mc-thoughts; I don't have enough money@@
+			<<else>><<thought>>I don't have enough money<</thought>>
 			<</if>>
-		<<else>>@@.mc-thoughts; _noNeedText@@@@.warningtext; (Req. <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:20%; display: inline; margin: 0;" }>> ≥ _reqCorruption)@@
+		<<else>><<thought>>_noNeedText<</thought>>@@.warningtext; (Req. <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:20%; display: inline; margin: 0;" }>> ≥ _reqCorruption)@@
 		<</if>>
 	<</if>>
 	</div>
@@ -126,10 +126,10 @@ setup.notPurchased = function(varName) {
 						<<run setup.Mc.removeMoney(_price)>>
 					<</link>>@@<br>
 				<</capture>>
-			<<else>>@@.mc-thoughts; I don't have enough money@@
+			<<else>><<thought>>I don't have enough money<</thought>>
 			<</if>>
 		<<else>>
-			@@.mc-thoughts; I don't think I need to buy anything here right now@@
+			<<thought>>I don't think I need to buy anything here right now<</thought>>
 		<</if>>
 	<</if>>
 	</div>

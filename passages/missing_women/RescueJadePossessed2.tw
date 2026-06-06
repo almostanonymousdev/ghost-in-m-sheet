@@ -7,7 +7,7 @@
 	<<if _checkR eq 2>>
 		<<video "characters/rescue/jade/1.5.mp4">>
 	<</if>>
-	@@.mc-thoughts; She started fucking you fast, making your pussy make slurping  sounds@@<br>
+	<<thought>>She started fucking you fast, making your pussy make slurping  sounds<</thought>><br>
 	@@.mc-speech; Oh my god~ I'm going to <<linkappend "cum again~">>
 		<<video "characters/rescue/jade/1.6.mp4">>
 		@@.mc-thoughts; The orgasm hit you again, and you couldn't hold on. Falling to the floor, your body was still trembling in pleasure.@@<br>
@@ -15,8 +15,8 @@
 	<</linkappend>>@@
 <<elseif setup.MissingWomen.jadePossessedStage() eq 2>>
 	<<video "characters/rescue/jade/2.6.mp4">>
-	@@.mc-thoughts; You start kissing, and the whole world slips away from you in that moment. <br>You [[pass out.|Church]]@@
+	<<thought>>You start kissing, and the whole world slips away from you in that moment. <br>You [[pass out.|Church]]<</thought>>
 <<elseif setup.MissingWomen.jadePossessedStage() eq 3>>
 	<<video "characters/rescue/jade/3.8.mp4">>
-	@@.mc-thoughts; You start kissing, and the whole world slips away from you in that moment. <br>You [[pass out.|Church][setup.MissingWomen.sleepOffHoursAfterEvent()]]@@
+	<<thought>>You start kissing, and the whole world slips away from you in that moment. <br>You [[pass out.|Church][setup.MissingWomen.sleepOffHoursAfterEvent()]]<</thought>>
 <</if>>

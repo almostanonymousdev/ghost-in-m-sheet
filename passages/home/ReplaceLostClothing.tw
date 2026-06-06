@@ -2,9 +2,9 @@
 @@.location; Replace lost clothing@@<br>
 <br>
 <<if not setup.Wardrobe.hasLostClothing()>>
-	@@.mc-thoughts; Nothing to replace -- my wardrobe is back in order.@@<br>
+	<<thought>>Nothing to replace -- my wardrobe is back in order.<</thought>><br>
 <<else>>
-	@@.mc-thoughts; The ghost made off with these. I can pop down to the mall later, or just order replacements now.@@<br>
+	<<thought>>The ghost made off with these. I can pop down to the mall later, or just order replacements now.<</thought>><br>
 	<br>
 	<div class="flexwrapper backgroundForText">
 	<<for _id range setup.Wardrobe.lostClothing()>>
@@ -20,7 +20,7 @@
 					<</link>>@@<br>
 				<</capture>>
 			<<else>>
-				@@.mc-thoughts; I don't have enough money@@
+				<<thought>>I don't have enough money<</thought>>
 			<</if>>
 			</div>
 		<</if>>

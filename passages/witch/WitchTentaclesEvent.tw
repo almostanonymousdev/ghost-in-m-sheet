@@ -1,13 +1,13 @@
 :: WitchTentaclesEvent [nobr] {"position":"1450,250","size":"100,100"}
 <<image "mechanics/tentacles/witch-t.jpg" { width: "100%" }>><br>
-@@.mc-thoughts; The key warms in your palm. You have just enough time to think //wards// before the room agrees with you.@@<br>
-@@.mc-thoughts; Something cool and wet finds your wrist. Then your other wrist. Then somewhere your wrists aren't. The chair holds you to itself. Khadija's house, it turns out, keeps its own counsel about thieves -- one length tight enough at your throat to make the breath count, another working low and patient, getting acquainted before it@@
+<<thought>>The key warms in your palm. You have just enough time to think //wards// before the room agrees with you.<</thought>><br>
+<<thought>>Something cool and wet finds your wrist. Then your other wrist. Then somewhere your wrists aren't. The chair holds you to itself. Khadija's house, it turns out, keeps its own counsel about thieves -- one length tight enough at your throat to make the breath count, another working low and patient, getting acquainted before it<</thought>>
 <<linkappend "@@.usebtn; gets to work.@@">>
 	<<video "mechanics/tentacles/witch-t1.mp4">>
-	@@.mc-thoughts; It pushes in. Slow, then less slow. Whatever's down there isn't in a hurry to leave you, and your body, your stupid honest body, is already deciding how it feels about that. Then the thing inside you finishes, hot and a@@
+	<<thought>>It pushes in. Slow, then less slow. Whatever's down there isn't in a hurry to leave you, and your body, your stupid honest body, is already deciding how it feels about that. Then the thing inside you finishes, hot and a<</thought>>
 	<<linkappend "@@.usebtn; lot of it@@">>
 		<<video "mechanics/tentacles/witch-t2.mp4">>
-		@@.mc-thoughts; Then the grip eases. The wet weight slides out of you and away into the dark, leaving you wet down both thighs and not quite the same person who walked in. You let yourself out. Quietly. The key is wherever it was before; you don't look.@@<br><br>
+		<<thought>>Then the grip eases. The wet weight slides out of you and away into the dark, leaving you wet down both thighs and not quite the same person who walked in. You let yourself out. Quietly. The key is wherever it was before; you don't look.<</thought>><br><br>
 		@@.backbtn; [[Continue|Witch]]@@
 		<<if setup.Witch.remove2HoursHandleMidnight()>><<run setup.Tick.resetCooldowns()>><</if>>
 	<</linkappend>>

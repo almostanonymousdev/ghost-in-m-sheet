@@ -2,39 +2,39 @@
 <<set _checkBeauty to random(30,100)>>
 <<if setup.Ghosts.twinsEventReady() and _checkBeauty gt setup.Mc.beauty()>>
 	<<video "characters/ghosts/specials/twins1.mp4">>
-	@@.mc-thoughts;You're looking in the mirror, admiring your reflection, when suddenly two strangers appear, observing you. They assess every curve of your body @@
+	<<thought>>You're looking in the mirror, admiring your reflection, when suddenly two strangers appear, observing you. They assess every curve of your body<</thought>>
 	<<linkappend "@@.mc-thoughtsLink; through the glass@@">>
-		@@.mc-thoughts; You watch them, captivated by their sudden arrival, but they disappear just as quickly as they appeared.@@<br>
-		@@.mc-speech; It was... strange @@<br><br>
+		<<thought>>You watch them, captivated by their sudden arrival, but they disappear just as quickly as they appeared.<</thought>><br>
+		<<mc>>It was... strange<</mc>><br><br>
 		@@.backbtn;[[Back|Bathroom]] @@<br>
 		<<run setup.Ghosts.consumeTwinsEvent()>>
 	<</linkappend>>
 <<elseif setup.Ghosts.twinsEventReady() and _checkBeauty lte setup.Mc.beauty()>>
 	<<video "characters/ghosts/specials/twins.mp4">>
-	@@.mc-thoughts;You're looking in the mirror, admiring your reflection, when suddenly two strangers appear, observing you. They assess every curve of your body @@<<linkappend "@@.mc-thoughtsLink; through the glass@@">>
+	<<thought>>You're looking in the mirror, admiring your reflection, when suddenly two strangers appear, observing you. They assess every curve of your body<</thought>><<linkappend "@@.mc-thoughtsLink; through the glass@@">>
 		<<video "characters/ghosts/specials/twins2.mp4">>
-		@@.mc-thoughts;But they don't disappear. They're here, in reality. They approach closer, and you feel their breath on your skin. Their hands start to caress you, stripping off your clothes, their fingers lightly touching your nipples, making you shiver with desire.@@<br>
-		@@.mc-speech;Oh... this is so... mmm...@@<br>
-		@@.mc-thoughts;You feel your arousal building, your body responding to every touch with incredible pleasure. You can't resist, [[giving in to their desires|TheTwinsEvent]]@@<br>
+		<<thought>>But they don't disappear. They're here, in reality. They approach closer, and you feel their breath on your skin. Their hands start to caress you, stripping off your clothes, their fingers lightly touching your nipples, making you shiver with desire.<</thought>><br>
+		<<mc>>Oh... this is so... mmm...<</mc>><br>
+		<<thought>>You feel your arousal building, your body responding to every touch with incredible pleasure. You can't resist, [[giving in to their desires|TheTwinsEvent]]<</thought>><br>
 
 	<</linkappend>>
 
 <<else>>
 	<span id="mirrorImage"><<image "ui/img/mc.jpg">></span><br>
 
-	@@.mc-speech; Looking pretty good. I'm ready to take on the world!@@<br>
+	<<mc>>Looking pretty good. I'm ready to take on the world!<</mc>><br>
 	<b>Beauty: </b> <<= setup.Mc.beauty()>>
 	<br>
 	<<if setup.Mc.makeupApplied() eq false>>
 		<<if setup.Mc.makeupAmount() gte 1>>
 			@@.usebtn;<<link "Apply regular makeup (1 charge)" "Mirror">><<run setup.Home.applyMakeupTier(1)>>
 			<</link>>@@<br>
-		<<else>>@@.mc-speech;I don't have enough makeup@@<br>
+		<<else>><<mc>>I don't have enough makeup<</mc>><br>
 		<</if>>
 		<<if setup.Mc.makeupAmount() gte 2>>
 			@@.usebtn;<<link "Apply stylish makeup (2 charges)" "Mirror">><<run setup.Home.applyMakeupTier(2)>>
 			<</link>>@@<br>
-		<<else>>@@.mc-speech;I don't have enough makeup@@<br>
+		<<else>><<mc>>I don't have enough makeup<</mc>><br>
 		<</if>>
 		<<if setup.Mc.makeupAmount() gte 3>>
 			<<if setup.Mc.corruption() gte 10>>
@@ -43,9 +43,9 @@
 			<<else>>@@.usebtn;<<linkreplace "Apply slutty makeup (3 charges)">>@@.mc-speech; Why should I do this makeup?@@
 			<</linkreplace>>@@<br>
 			<</if>>
-		<<else>>@@.mc-speech;I don't have enough makeup@@<br>
+		<<else>><<mc>>I don't have enough makeup<</mc>><br>
 		<</if>>
-	<<else>>@@.mc-thoughts; I need to remove my makeup first@@
+	<<else>><<thought>>I need to remove my makeup first<</thought>>
 	<</if>>
 	<br>
 	@@.backbtn;[[Back|Bathroom]] @@<br>

@@ -42,7 +42,7 @@
 </div>
 <br>
 <<if setup.Witch.wardenClothesStage() eq setup.WardenClothesStage.HINT_OFFERED>>
-	@@.mc-thoughts; Tshirts, skirts, gym wear. Nothing on these racks reads warden. <em>Nobody else wants them</em>, Khadija said. Probably not the kind of place running a police surplus store, then. I might have better luck at the sex shop.@@<br>
+	<<thought>>Tshirts, skirts, gym wear. Nothing on these racks reads warden. <em>Nobody else wants them</em>, Khadija said. Probably not the kind of place running a police surplus store, then. I might have better luck at the sex shop.<</thought>><br>
 <</if>>
 @@.backbtn;[[Leave|Mall]] @@
 <<bodyBackground "assets/ui/img/clothing-section.jpg">>

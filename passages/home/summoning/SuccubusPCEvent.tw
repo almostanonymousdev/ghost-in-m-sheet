@@ -3,31 +3,31 @@
 	<<run setup.Home.setSuccubusPCEventStage(0)>>
 <</if>>
 <<video "characters/succubus/pc1.mp4">>
-@@.mc-thoughts; You're sitting at your computer, engrossed in work, when something suddenly catches your eye in your peripheral vision.@@<br>
-@@.mc-speech;What the fuck was that? Maybe I'm just seeing things...@@<br><br>
+<<thought>>You're sitting at your computer, engrossed in work, when something suddenly catches your eye in your peripheral vision.<</thought>><br>
+<<mc>>What the fuck was that? Maybe I'm just seeing things...<</mc>><br><br>
 <<linkreplace "@@.backbtn; Leave@@">>
 	<<image "characters/succubus/pc1.jpg" { width: "100%" }>><br>
-	@@.mc-thoughts; Suddenly, a girl appears before you, her eyes piercing through you as if she knows all your secrets. She just stares at you, her gaze so intense that@@
+	<<thought>>Suddenly, a girl appears before you, her eyes piercing through you as if she knows all your secrets. She just stares at you, her gaze so intense that<</thought>>
 	<<linkappend "@@.usebtn; you feel the heat rise@@">>
 		<<if setup.Home.succubusEventCD() neq 0>>
-			<br>@@.mc-thoughts; In a moment, she disappears, leaving you with a sense of something unexplored.@@<br>
-			@@.mc-speech; WHAT the fuck just happened... I hope this ghost doesn't bother me anymore. Maybe I should ask how to get rid of it if it keeps haunting me.@@<br><br>
+			<br><<thought>>In a moment, she disappears, leaving you with a sense of something unexplored.<</thought>><br>
+			<<mc>>WHAT the fuck just happened... I hope this ghost doesn't bother me anymore. Maybe I should ask how to get rid of it if it keeps haunting me.<</mc>><br><br>
 			@@.backbtn; [[Leave|Livingroom]]@@<br>
 		<<else>>
 			<<run setup.Home.setSuccubusEventCD(1)>>
 			<<video "characters/succubus/pc3.mp4">>
-			@@.mc-thoughts; Her hands unexpectedly wrapping around you from behind, turning you to face the desk. She bends you over, making you lean on the table, your ass now exposed for her to see and touch. Her hands glide over your ass, squeezing it, making you shiver with surprise and arousal.@@<br>
-			@@.mc-speech;Oh... what are you doing?@@<br>
-			@@.mc-thoughts; She starts kissing your ass, her lips leaving trails of passion on your skin, her tongue touching your cheeks, making you@@
+			<<thought>>Her hands unexpectedly wrapping around you from behind, turning you to face the desk. She bends you over, making you lean on the table, your ass now exposed for her to see and touch. Her hands glide over your ass, squeezing it, making you shiver with surprise and arousal.<</thought>><br>
+			<<mc>>Oh... what are you doing?<</mc>><br>
+			<<thought>>She starts kissing your ass, her lips leaving trails of passion on your skin, her tongue touching your cheeks, making you<</thought>>
 			<<run setup.Mc.setLust(100)>>
 			<<linkappend "@@.usebtn; tremble with pleasure@@">>
 				<<video "characters/succubus/pc2.mp4">>
-				@@.mc-thoughts; Then, she slightly turns you, her mouth finds your pussy, her tongue begins to caress you, exploring every nook, making@@
+				<<thought>>Then, she slightly turns you, her mouth finds your pussy, her tongue begins to caress you, exploring every nook, making<</thought>>
 				<<linkappend "@@.usebtn; you moan with delight.@@">>
 					<<if setup.Home.succubusPCEventStage() eq 0>>
 						<<video "characters/succubus/pcend.mp4">>
-						@@.mc-thoughts; But suddenly, you wake up. It was all just a dream, yet the satisfaction from what you experienced lingers, as if your body still holds the echo of those sensations.@@<br>
-						@@.mc-speech;Damn... that was such a real dream...@@<br>
+						<<thought>>But suddenly, you wake up. It was all just a dream, yet the satisfaction from what you experienced lingers, as if your body still holds the echo of those sensations.<</thought>><br>
+						<<mc>>Damn... that was such a real dream...<</mc>><br>
 						<<if setup.Mc.corruption() lt 10>>
 							<<run setup.Mc.addCorruption(0.2)>>
 							+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
@@ -35,12 +35,12 @@
 						@@.backbtn; [[Leave|Livingroom][setup.Home.bumpSuccubusPCEventStage()]]@@
 					<<else>>
 						<<video "characters/succubus/pc4.mp4">>
-						@@.mc-thoughts; She pulls you to your knees in front of her, guiding a dildo to your mouth, and she starts slowly fucking you with it, making you take it deeper with each thrust. You feel the wetness running down your legs, @@
+						<<thought>>She pulls you to your knees in front of her, guiding a dildo to your mouth, and she starts slowly fucking you with it, making you take it deeper with each thrust. You feel the wetness running down your legs,<</thought>>
 						<<linkappend "@@.usebtn; the arousal reaching its peak@@">>
 							<<if setup.Home.succubusPCEventStage() eq 1>>
 								<<video "characters/succubus/pcend.mp4">>
-								@@.mc-thoughts; But suddenly, you wake up. It was all just a dream, yet the satisfaction from what you experienced lingers, as if your body still holds the echo of those sensations.@@<br>
-								@@.mc-speech;Damn... that was such a real dream...@@<br>
+								<<thought>>But suddenly, you wake up. It was all just a dream, yet the satisfaction from what you experienced lingers, as if your body still holds the echo of those sensations.<</thought>><br>
+								<<mc>>Damn... that was such a real dream...<</mc>><br>
 								<<if setup.Mc.corruption() lt 10>>
 									<<run setup.Mc.addCorruption(0.2)>>
 									+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
@@ -52,7 +52,7 @@
 								<span id ="succubusPCEvent">
 								<<video "characters/succubus/pc5.mp4">></span>
 								<<set _videoIndex to 5>>
-								@@.mc-thoughts; Then, she lifts you back up and starts fucking you with the dildo ,@@
+								<<thought>>Then, she lifts you back up and starts fucking you with the dildo ,<</thought>>
 
 								<<link "@@.usebtn; in various positions@@">>
 									<<set _videoIndex to (_videoIndex) % 4 + 5>>
@@ -62,12 +62,12 @@
 									<</replace>>
 								<</link>>
 
-								@@.mc-thoughts; each movement bringing new sensations, penetrating you with such force and sensuality that you lose yourself. Each thrust brings a new wave of pleasure; you feel an@@
+								<<thought>>each movement bringing new sensations, penetrating you with such force and sensuality that you lose yourself. Each thrust brings a new wave of pleasure; you feel an<</thought>>
 								<<linkappend "@@.usebtn; orgasm approaching.@@">>
 									<<if setup.Home.succubusPCEventStage() eq 2>>
 										<<video "characters/succubus/pcend.mp4">>
-										@@.mc-thoughts; But suddenly, you wake up. It was all just a dream, yet the satisfaction from what you experienced lingers, as if your body still holds the echo of those sensations.@@<br>
-										@@.mc-speech;Damn... that was such a real dream...@@<br>
+										<<thought>>But suddenly, you wake up. It was all just a dream, yet the satisfaction from what you experienced lingers, as if your body still holds the echo of those sensations.<</thought>><br>
+										<<mc>>Damn... that was such a real dream...<</mc>><br>
 										<<if setup.Mc.corruption() lt 10>>
 											<<run setup.Mc.addCorruption(0.2)>>
 											+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>
@@ -75,11 +75,12 @@
 										@@.backbtn; [[Leave|Livingroom][setup.Home.bumpSuccubusPCEventStage()]]@@<br>
 									<<else>>
 										<<video "characters/succubus/pcend1.mp4">>
-										@@.mc-thoughts; She kisses your lips, smiling, promising even more pleasure. In an instant, she vanishes, leaving you alone with your sensations.<br>
+										<<thought>>She kisses your lips, smiling, promising even more pleasure. In an instant, she vanishes, leaving you alone with your sensations.<br>
 
-										You lie there, savoring the orgasm that still ripples through your body, every cell quivering with pleasure. Some time passes, but you don't wake up as before, causing you to wonder@@<br>
+											You lie there, savoring the orgasm that still ripples through your body, every cell quivering with pleasure. Some time passes, but you don't wake up as before, causing you to wonder
+										<</thought>><br>
 
-										@@.mc-speech; Is this not a dream? Fuck, I need to get rid of her, or she'll corrupt me completely...@@<br>
+										<<mc>>Is this not a dream? Fuck, I need to get rid of her, or she'll corrupt me completely...<</mc>><br>
 										<<if setup.Mc.corruption() lt 10>>
 											<<run setup.Mc.addCorruption(0.2)>>
 											+0.2 <<statIcon setup.StatIcon.CORRUPTION>><br>

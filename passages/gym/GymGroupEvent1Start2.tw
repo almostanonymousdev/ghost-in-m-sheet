@@ -2,13 +2,14 @@
 <<addLust 15>>
 <<addTime 60>>
 <<randomVideo "scenes/gym/grouptraining1.5.mp4" "scenes/gym/grouptraining1.6.mp4">>
-@@.mc-thoughts; First someone fucked you, then you started fucking someone else with a toy.<br>
-Eventually everyone @@<<linkappend "@@.mc-thoughtsLink; gathered around you again.@@">>  <br>
+<<thought>>First someone fucked you, then you started fucking someone else with a toy.<br>
+	Eventually everyone
+<</thought>><<linkappend "@@.mc-thoughtsLink; gathered around you again.@@">>  <br>
 	<<video "scenes/gym/grouptraining1end.mp4">>
-	@@.notmc-speech; Yes~Finger your juicy pussy.@@ <br>
-	@@.mc-speech; Fuck~ i'm about to~@@<br>
-	@@.mc-thoughts; You're squirting, almost losing consciousness from the overwhelming pleasure.@@<br>
-	@@.mc-speech; Oh, thank you girls, I will try to come to you more often@@<br>
+	<<vocal npc>>Yes<</vocal>> <<say>>Finger your juicy pussy.<</say>> <br>
+	<<vocal mc>>Fuck<</vocal>> <<mc>>I'm about to~<</mc>><br>
+	<<thought>>You're squirting, almost losing consciousness from the overwhelming pleasure.<</thought>><br>
+	<<mc>>Oh, thank you girls, I will try to come to you more often<</mc>><br>
 	<<run setup.Mc.setLust(0)>>
 	<<refreshMeter 'lust'>>
 	<<gainXP 10 0.5>>

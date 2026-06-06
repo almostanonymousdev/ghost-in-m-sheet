@@ -3,16 +3,16 @@
 @@.location; Livingroom@@<br>
 <br>
 <<if setup.Home.tentaclesPCText() eq 1>>
-	@@.mc-speech; These are the creatures from nightmares... they've appeared here too@@<br>
+	<<mc>>These are the creatures from nightmares... they've appeared here too<</mc>><br>
 	<<run setup.Home.clearTentaclesPCText()>>
 <<elseif setup.Home.tentaclesPCText() eq 2>>
-	@@.mc-speech; They're not so bad after all.@@<br>
+	<<mc>>They're not so bad after all.<</mc>><br>
 	<<run setup.Home.clearTentaclesPCText()>>
 <<elseif setup.Home.tentaclesPCText() eq 3>>
-	@@.mc-speech; It's a shame they disappeared... I hope next time I'll be able to keep them.@@<br>
+	<<mc>>It's a shame they disappeared... I hope next time I'll be able to keep them.<</mc>><br>
 	<<run setup.Home.clearTentaclesPCText()>>
 <<elseif setup.Home.tentaclesTVText() eq 1>>
-	@@.mc-speech; How long did I sleep? Doesn't matter, I feel fantastic! Hehe~@@<br>
+	<<mc>>How long did I sleep? Doesn't matter, I feel fantastic!<</mc>> <<vocal mc>>Hehe<</vocal>><br>
 	<<run setup.Home.clearTentaclesTVText()>>
 <</if>>
 <<if previous() is "Home" and setup.Witch.hasCursedItemToTurnIn()>>
@@ -54,30 +54,32 @@
 <<if setup.Home.succubusCanKnock()>>
 	<<linkreplace "@@.usebtn; Someone is gently knocking on the door@@">>
 		<<run setup.Home.markSuccubusArrived()>>
-		@@.mc-thoughts; You open the door -- no one is there. A light breeze brushes against your face and fades away.@@<br>
-		@@.mc-speech; Hmm... Strange, I could've sworn I heard knocking...@@
+		<<thought>>You open the door -- no one is there. A light breeze brushes against your face and fades away.<</thought>><br>
+		<<mc>>Hmm... Strange, I could've sworn I heard knocking...<</mc>>
 	<</linkreplace>><br>
 <</if>>
 
 <<if setup.Home.isNightForHunt()>>
 	<<if not setup.Wardrobe.isDressedForStreet()>>
-		@@.mc-thoughts; I can't go outside naked @@
+		<<thought>>I can't go outside naked<</thought>>
 	<<elseif setup.Home.isDirty()>>
-		@@.mc-thoughts; I need to go to the bathroom first@@
+		<<thought>>I need to go to the bathroom first<</thought>>
 	<<elseif setup.Home.isCorruptEnoughToSkipUnderwear()>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@
-	<<elseif not setup.Wardrobe.isWearingUnderwear()>>@@.mc-thoughts; I can't go outside without underwear @@
+	<<elseif not setup.Wardrobe.isWearingUnderwear()>><<thought>>I can't go outside without underwear<</thought>>
 	<<else>>@@.movebtn;[[Ghost hunting|GhostStreet]]@@
 	<</if>>
-<<else>> @@.mc-thoughts;Not appropriate time for ghost hunting@@
+<<else>> <<thought>>Not appropriate time for ghost hunting<</thought>>
 <</if>>
 <br>
 <br>
 <<if not setup.Wardrobe.isDressedForStreet()>>
-	@@.mc-thoughts; I can't go outside naked @@
+	<<thought>>I can't go outside naked<</thought>>
 
-<<elseif setup.Home.isDirty()>>@@.mc-thoughts; I need to go to the bathroom first@@
+<<elseif setup.Home.isDirty()>><<thought>>I need to go to the bathroom first<</thought>>
 <<elseif setup.Home.isCorruptEnoughToSkipUnderwear()>>@@.backbtn;[[Leave|Home]]@@
-<<elseif not setup.Wardrobe.isWearingUnderwear()>>@@.mc-thoughts; I can't go outside without underwear @@<<else>>@@.backbtn;[[Leave|Home]]@@
+<<elseif not setup.Wardrobe.isWearingUnderwear()>>
+	<<thought>>I can't go outside without underwear<</thought>>
+<<else>>@@.backbtn;[[Leave|Home]]@@
 <</if>>
 /*[[RoomCleanup]]*/
 <<if previous() is "GhostSpecialEventWraithStart">>

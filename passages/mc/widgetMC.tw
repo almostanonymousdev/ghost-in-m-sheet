@@ -1,9 +1,9 @@
 :: widgetMC [widget nobr] {"position":"1975,1325","size":"100,100"}
 <<widget "lvlStar">>
 	/* Sidebar level icon doubling as an XP gauge: a desaturated base
-	   star (always visible) with a full-color copy clipped from the top
-	   by (100 - pct)% so it fills bottom-up as XP accumulates toward
-	   the next level. Pure CSS overlay — both layers share lvl.png. */
+		star (always visible) with a full-color copy clipped from the top
+		by (100 - pct)% so it fills bottom-up as XP accumulates toward
+		the next level. Pure CSS overlay — both layers share lvl.png. */
 	<<set _lvlPct to Math.max(0, Math.min(100, Math.floor((setup.Mc.exp() / setup.Mc.neededForNextLevel()) * 100)))>>
 	<<set _lvlClip to 100 - _lvlPct>>
 	<span class="lvl-star" @title="'XP ' + setup.Mc.exp() + ' / ' + setup.Mc.neededForNextLevel() + ' (' + _lvlPct + '%)'">

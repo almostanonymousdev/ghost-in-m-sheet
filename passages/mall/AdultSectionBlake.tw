@@ -3,24 +3,24 @@
 
 <<if setup.Mall.blakeUnlocked()>>
 	<<if setup.Mall.blakeFirstMeeting()>>
-		@@.notmc-speech; You <<= setup.Mc.name()>>?@@<br>
-		@@.mc-speech; Depends.@@<br>
-		@@.notmc-speech; Alice said you'd say that. I'm Blake. She talks about you.@@<br>
-		@@.mc-thoughts; From her coy smile and building blush, you suspect the conversation wasn't strictly professional.@@<br>
+		<<say>>You <<= setup.Mc.name()>>?<</say>><br>
+		<<mc>>Depends.<</mc>><br>
+		<<say>>Alice said you'd say that. I'm Blake. She talks about you.<</say>><br>
+		<<thought>>From her coy smile and building blush, you suspect the conversation wasn't strictly professional.<</thought>><br>
 		<<run setup.Mall.setBlakeDialogStage(0)>>
 		<<if setup.Mall.blakeCanIntroduceCursedItemBuyback()>>
 			<<include "BlakeCursedItemOffer">>
 		<<else>>
-			@@.notmc-speech; A lot of men seem to walks into those houses, but you're one of the few women who keep making it out. Good. That'd be such a waste of a pretty face.@@<br>
+			<<say>>A lot of men seem to walks into those houses, but you're one of the few women who keep making it out. Good. That'd be such a waste of a pretty face.<</say>><br>
 		<</if>>
 	<<else>>
-		@@.notmc-speech; Hi <<= setup.Mc.name()>>, need any help?@@<br>
+		<<say>>Hi <<= setup.Mc.name()>>, need any help?<</say>><br>
 		<<if setup.Mall.blakeCanIntroduceCursedItemBuyback()>>
 			<<include "BlakeCursedItemOffer">>
 		<</if>>
 		<<if setup.Mall.blakeHasCursedItemToSell()>>
 			<<linkreplace "@@.usebtn;Give her the cursed item@@">>
-				@@.notmc-speech; Thanks, gorgeous. Here's your money. Feel free to bring more, I'll gladly buy them from you.@@<br>
+				<<say>>Thanks, gorgeous. Here's your money. Feel free to bring more, I'll gladly buy them from you.<</say>><br>
 				Money: +60 $ <br>
 
 				<<if setup.Mall.canRaiseBlakeRelationship()>>
@@ -34,8 +34,8 @@
 	<</if>>
 
 <<else>>
-	@@.notmc-speech; Hi ,need any help?@@<br>
-	@@.mc-speech; No, thanks, I'm just looking around.@@<br>
+	<<say>>Hi ,need any help?<</say>><br>
+	<<mc>>No, thanks, I'm just looking around.<</mc>><br>
 <</if>>
 
 <<if setup.Mall.blakeIsCompanionCandidate()>>
@@ -44,16 +44,17 @@
 	<<else>>
 		@@.mc-speech;<<link "Ask Blake to join you for ghost hunting tonight.">>
 			<<run setup.Mall.pickBlakeForHunt()>>
-			<<replace "#blakeInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
-				@@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house. <br>
-				But if we find the cursed item, I'll keep it, okay?@@<br>
-				@@.mc-speech; Fine, let's do that.@@
+			<<replace "#blakeInfoAnswer">><<mc>>I want you to join me for ghost hunting today<</mc>><br>
+				<<say>>Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house. <br>
+					But if we find the cursed item, I'll keep it, okay?
+				<</say>><br>
+				<<mc>>Fine, let's do that.<</mc>>
 			<</replace>>
 		<</link>>@@<br>
 
 		<span class="CompanionInfoAskForHuntAlone">
 		@@.mc-speech;<<link "I'd like you to go ghost hunting alone.">>
-			<<replace "#blakeInfoAnswer">>@@.notmc-speech; I think I'm already experienced enough to do it on my own. Where should I go?@@<br>
+			<<replace "#blakeInfoAnswer">><<say>>I think I'm already experienced enough to do it on my own. Where should I go?<</say>><br>
 
 				@@.enterbtn;<<link `"Owaissa Street - " + setup.Mall.chanceBlakeAloneOwaissa() + " %"`>>
 					<<run setup.Mall.pickBlakeForSoloHuntOwaissa()>>
@@ -62,7 +63,7 @@
 						<<replace "#blakeInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
 						<</replace>>
 					<<else>>
-						<<replace "#blakeInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
+						<<replace "#blakeInfoAnswerTwo">><<say>>Owaissa Street? Hmm... Yes, of course. I think I can handle it.<</say>>
 						<</replace>>
 					<</if>>
 				<</link>>@@
@@ -73,7 +74,7 @@
 						<<replace "#blakeInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
 						<</replace>>
 					<<else>>
-						<<replace "#blakeInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@
+						<<replace "#blakeInfoAnswerTwo">><<say>>Elm Street? Hmm... Yes, of course. I think I can handle it.<</say>>
 						<</replace>>
 					<</if>>
 				<</link>>@@@@color: green; <b>-20$</b>@@<br>
@@ -106,16 +107,16 @@
 @@.backbtn; [[Back|AdultSection]]@@
 
 :: BlakeCursedItemOffer {"position":"3000,1750","size":"100,100"}
-@@.notmc-speech; I heard you and the witch trade in objects nobody else wants. Heavy in the hand without looking heavy? The ones that make a room feel wrong?@@
-@@.mc-speech; Or very right...@@
-@@.mc-speech; Some of them. I bring them to her.@@
-@@.notmc-speech; I pay more.@@
-@@.mc-speech; Why?@@
-@@.notmc-speech; My patrons aren't all here for the inflatables. They're here for my shelf in back that has a waiting list. If I keep that shelf full, my rent gets paid.@@
-@@.mc-speech; I don't think that Khadija would like that.@@
-@@.notmc-speech; She won't be told. Or she will and she'll be over it in a week. She's a big girl.@@
-@@.mc-speech; I'll think on it.@@
-@@.notmc-speech; Think quicker than you usually do. I tend to get bored of my toys fast.@@
+<<say>>I heard you and the witch trade in objects nobody else wants. Heavy in the hand without looking heavy? The ones that make a room feel wrong?<</say>>
+<<mc>>Or very right...<</mc>>
+<<mc>>Some of them. I bring them to her.<</mc>>
+<<say>>I pay more.<</say>>
+<<mc>>Why?<</mc>>
+<<say>>My patrons aren't all here for the inflatables. They're here for my shelf in back that has a waiting list. If I keep that shelf full, my rent gets paid.<</say>>
+<<mc>>I don't think that Khadija would like that.<</mc>>
+<<say>>She won't be told. Or she will and she'll be over it in a week. She's a big girl.<</say>>
+<<mc>>I'll think on it.<</mc>>
+<<say>>Think quicker than you usually do. I tend to get bored of my toys fast.<</say>>
 
 @@.mc-action;Now you can bring cursed items to the adult store and sell them for a higher price.@@
 <<run setup.Mall.setBlakeDialogStage(1)>>

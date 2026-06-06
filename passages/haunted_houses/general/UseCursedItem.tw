@@ -8,8 +8,8 @@
 <br>
 <<if _vid>>
 	<<video _vid "displayCentredImgs">><br>
-	@@.mc-speech; Ah~ I can't... and don't want to... stop <br>@@
-	@@.mc-thoughts; You play with yourself until you cum @@<br>@@.mc-speech; Ohh, I feel wonderful.@@<br>
+	<<vocal mc>>Ah<</vocal>> <<mc>>I can't... and don't want to... stop<</mc>><br>
+	<<thought>>You play with yourself until you cum<</thought>><br><<mc>>Ohh, I feel wonderful.<</mc>><br>
 	<<if not setup.Flashbacks.isReplaying()>>
 		<<run setup.Mc.setLust(0)>>
 		<<refreshMeter 'lust'>>

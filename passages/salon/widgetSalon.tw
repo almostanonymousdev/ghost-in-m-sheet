@@ -23,7 +23,7 @@
 				<</link>>@@<br>
 			<</capture>>
 		<<else>>
-			@@.mc-thoughts; I don't have enough money@@
+			<<thought>>I don't have enough money<</thought>>
 		<</if>>
 	<</if>>
 	</div>
@@ -54,7 +54,7 @@
 						<<if _extraVar>><<run State.variables[_extraVar] = _extraVal>><</if>>
 					<</link>>@@<br>
 				<</capture>>
-			<<else>>@@.mc-thoughts; I don't have enough money@@
+			<<else>><<thought>>I don't have enough money<</thought>>
 			<</if>>
 		<<else>>
 			@@.warningtext; Req. _reqCorruption+ <<image "ui/img/corruption.png" { style: "position: relative; top: 0.375em; width:30px; display: inline; margin: 0;" }>>@@<br>

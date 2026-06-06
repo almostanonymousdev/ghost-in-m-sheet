@@ -2,10 +2,10 @@
 <<image "ui/img/deliverybuilding.jpg" { width: "90%" }>><br>
 @@.location; Delivery hub@@<br>
 
-@@.mc-thoughts; This is a small office in the city specializing in the delivery of various goods. It's one of the few places where you can earn some money@@<br>
+<<thought>>This is a small office in the city specializing in the delivery of various goods. It's one of the few places where you can earn some money<</thought>><br>
 <br>
 <<if not setup.Delivery.isOpen()>>
-	@@.mc-thoughts;The delivery hub is not open right now (open from 08:00 to 20:00)@@
+	<<thought>>The delivery hub is not open right now (open from 08:00 to 20:00)<</thought>>
 <<else>>
 	<<if setup.Delivery.completedShifts() gt 0>>
 		<div class="delivery-stats">
@@ -19,9 +19,9 @@
 	<<if setup.Delivery.canStartShift()>>
 		@@.usebtn;[[Take orders|WorkDelivery]]@@
 	<<elseif setup.Delivery.shiftDoneToday()>>
-		@@.mc-thoughts; I've already done my run for today. Come back tomorrow.@@
+		<<thought>>I've already done my run for today. Come back tomorrow.<</thought>>
 	<<elseif setup.Delivery.tooTiredForShift()>>
-		@@.mc-thoughts; I'm too tired@@
+		<<thought>>I'm too tired<</thought>>
 	<</if>>
 <</if>>
 <br>

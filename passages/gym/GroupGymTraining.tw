@@ -3,17 +3,17 @@
 <<randomVideo "scenes/gym/group.mp4" "scenes/gym/group1.mp4">>
 You spent about an hour at the gym, diligently working on improving your physical fitness. Each workout makes you stronger and more resilient, helping you reach new heights.<br>
 <<if setup.Gym.meetsBeautyForGroupEvent()>>
-	@@.mc-thoughts; Suddenly, you were@@ <<linkappend "@@.mc-thoughtsLink; surrounded by all the members of the group class@@.">><br>
+	<<thought>>Suddenly, you were<</thought>> <<linkappend "@@.mc-thoughtsLink; surrounded by all the members of the group class@@.">><br>
 
 		<<video "scenes/gym/grouptraining1.mp4">>
 		<<addLust 15>>
-		@@.notmc-speech;The class is almost over, and now we want to relax a bit. You'll help us out, won't you, sweetheart?@@<br>
-		@@.mc-thoughts; With these words they began to lightly touch your body, kissing and biting your tits and pussy @@<br>
+		<<say>>The class is almost over, and now we want to relax a bit. You'll help us out, won't you, sweetheart?<</say>><br>
+		<<thought>>With these words they began to lightly touch your body, kissing and biting your tits and pussy<</thought>><br>
 		<<if setup.Gym.canJoinGroupOrgy()>>
 			@@.mc-speech; I'm so horny...and they start rubbing my pussy right now....<br>
 			Oooh, [[I can't resist|GymGroupEvent1Start]]@@<br>
 		<<else>>
-			@@.mc-speech; No, sorry I'm [[not in the mood.|GymInside]]@@<br>@@.warningtext; (Req. <<statIcon setup.StatIcon.HEALTH>> ≥ 50)@@
+			<<mc>>No, sorry I'm [[not in the mood.|GymInside]]<</mc>><br>@@.warningtext; (Req. <<statIcon setup.StatIcon.HEALTH>> ≥ 50)@@
 		<</if>>
 	<</linkappend>>
 	<br>

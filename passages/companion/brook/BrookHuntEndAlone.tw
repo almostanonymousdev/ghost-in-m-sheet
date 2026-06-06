@@ -1,6 +1,6 @@
 :: BrookHuntEndAlone [noreturn nobr] {"position":"1875,3425","size":"100,100"}
 <<run setup.Companion.acknowledgeSoloHuntEnd("Brook")>>
-@@.mc-speech; How did your ghost hunt go?@@<br>
+<<mc>>How did your ghost hunt go?<</mc>><br>
 <<if setup.Companion.companionChoseOwaissa("Brook")>>
 	<<set _stateChance to setup.Companion.soloOdds("Brook", "Owaissa")>>
 <<elseif setup.Companion.companionChoseElm("Brook")>>
@@ -8,12 +8,12 @@
 <</if>>
 <<set _check to random(1,100)>>
 <<if _stateChance gte _check>>
-	@@.notmc-speech; <<= setup.Mc.name()>>, I did it! I correctly identified the ghost!@@<br>
+	<<say>><<= setup.Mc.name()>>, I did it! I correctly identified the ghost!<</say>><br>
 	<<set _resultBrookAlone to 1>>
 	<<set _reward to setup.Companion.payoutSoloHunt("Brook")>>
 	<span> Money: +$<<= _reward>> $ </span><br>
 <<else>>
-	@@.notmc-speech; <<= setup.Mc.name()>>, I didn't succeed... But I gained valuable experience and I'll be better prepared next time!@@
+	<<say>><<= setup.Mc.name()>>, I didn't succeed... But I gained valuable experience and I'll be better prepared next time!<</say>>
 	<<set _resultBrookAlone to 0>>
 <</if>>
 <br>
@@ -22,7 +22,7 @@
 <<linkappend "@@.mc-speechLink;Tell me more about how it went.@@">>
 	<br>
 	<<if setup.Companion.companionLvl("Brook") lt 3>>
-		@@.notmc-speech; I don't want to talk about it...@@ @@.warningtext; Req. Brook's lvl ≥ 3@@
+		<<say>>I don't want to talk about it...<</say>> @@.warningtext; Req. Brook's lvl ≥ 3@@
 	<<else>>
 		@@.notmc-speech;Well, listen...<br>
 		At first, things went well, of course, sometimes the ghost tried to...@@<<linkappend "@@.notmc-speechLink; scare me@@">>
@@ -38,14 +38,15 @@
 					"@@.notmc-speechLink;it appeared right in front of me.@@">>
 					<<set _appearVids to ["characters/brook/alone3.1.mp4", "characters/brook/alone3.2.mp4"]>>
 					<<randomVideoFromList _appearVids>>
-					@@.notmc-speech;I lost control... and I might have given it what it had been after from the beginning...@@<br>
-					<<if _resultBrookAlone eq 1>>@@.notmc-speech; After it cu... weakened, I ran away. That's it. @@<br>
-						@@.mc-speech; I knew you would succeed! Great job!@@
+					<<say>>I lost control... and I might have given it what it had been after from the beginning...<</say>><br>
+					<<if _resultBrookAlone eq 1>><<say>>After it cu... weakened, I ran away. That's it.<</say>><br>
+						<<mc>>I knew you would succeed! Great job!<</mc>>
 					<<elseif _resultBrookAlone eq 0>>
-						@@.notmc-speech;It seems I just passed out.. I woke up when it was already morning. <br>
-						That's it.@@<br>
-						@@.mc-speech; It's okay, you'll definitely succeed next time!@@<br>
-						@@.notmc-speech;You're right, I need to teach it a lesson for what it did to me...@@
+						<<say>>It seems I just passed out.. I woke up when it was already morning. <br>
+							That's it.
+						<</say>><br>
+						<<mc>>It's okay, you'll definitely succeed next time!<</mc>><br>
+						<<say>>You're right, I need to teach it a lesson for what it did to me...<</say>>
 					<</if>>
 
 				<</linkappend>>

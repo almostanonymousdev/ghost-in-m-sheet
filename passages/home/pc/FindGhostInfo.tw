@@ -1,6 +1,6 @@
 :: FindGhostInfo {"position":"950,125","size":"100,100"}
 <<if setup.Home.ghostInfoSearchedToday()>>
-@@.mc-speech; I already searched for information today. I think it's better to try again tomorrow.@@
+<<mc>>I already searched for information today. I think it's better to try again tomorrow.<</mc>>
 <<else>>
 <<linkreplace "Find information about ghosts">>
 <<run setup.Home.markGhostInfoSearched()>>
@@ -14,11 +14,11 @@
 		&emsp;&emsp; @@.mc-speech;Information about the _entry.name has been added to the Ghostpedia (ghost icon on the screen).@@
 		<<run _entry.isInfoCollected = true>>
 	<<else>>
-		@@.mc-thoughts; You search for ghost information online for an hour but find nothing useful.@@<br>
-		@@.mc-speech; That's enough for today. Maybe i'll get lucky and find something tomorrow.@@<br>
+		<<thought>>You search for ghost information online for an hour but find nothing useful.<</thought>><br>
+		<<mc>>That's enough for today. Maybe i'll get lucky and find something tomorrow.<</mc>><br>
 	<</if>>
 <<else>>
-	@@.mc-thoughts;You scrolled the internet for an hour, but didn't find any new information. It seems like you won't be able to find anything else here.@@
+	<<thought>>You scrolled the internet for an hour, but didn't find any new information. It seems like you won't be able to find anything else here.<</thought>>
 <</if>>
 <</linkreplace>>
 <</if>>

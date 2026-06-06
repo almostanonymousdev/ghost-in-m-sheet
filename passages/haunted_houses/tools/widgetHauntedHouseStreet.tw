@@ -39,11 +39,11 @@
 			<<image _rsh.image "iconPx">>
 			<<if setup.Mc.lvl() lt _rsh.levelGate>>
 				<<set _rshGate to _rsh.levelGate>>
-				@@.mc-thoughts; Level _rshGate+ required@@
+				<<thought>>Level _rshGate+ required<</thought>>
 			<<elseif typeof _rsh.gate eq "function" and not _rsh.gate()>>
 				@@.mc-thoughts; <<= _rsh.gateMessage or "Locked">>@@
 			<<elseif not setup.WitchContract.canEnterHouse(_rsh.id)>>
-				@@.mc-thoughts; Need a contract from Khadija@@
+				<<thought>>Need a contract from Khadija<</thought>>
 			<<else>>
 				<<capture _rsh>>
 					@@.icontext;<<link _rsh.label "HuntStart">>

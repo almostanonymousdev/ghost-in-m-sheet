@@ -1,12 +1,12 @@
 :: LibraryBrook [nobr] {"position":"3125,2100","size":"100,100"}
 <<if setup.Library.brookIsPossessed()>>
 	<<image "ui/img/library-inside.jpg" { width: "100%" }>>
-	@@.mc-speech; She's not there... strange...@@<br><br>
+	<<mc>>She's not there... strange...<</mc>><br><br>
 	@@.backbtn; [[Leave|LibraryInside]] @@<br>
 <<else>>
 	<<if setup.Library.brookIsWithRain()>>
 		<<image "ui/img/library-inside.jpg" { width: "100%" }>>
-		@@.mc-thoughts;She's probably still with Rain. Maybe it's worth waiting a couple of days. @@<br><br>
+		<<thought>>She's probably still with Rain. Maybe it's worth waiting a couple of days.<</thought>><br><br>
 		@@.backbtn; [[Leave|LibraryInside]] @@<br>
 	<<else>>
 
@@ -15,22 +15,22 @@
 		<br>
 		<<if not setup.Library.hasMetBrook()>>
 			<<run setup.Library.meetBrookFirstTime()>>
-			@@.mc-thoughts; You're tracking down a call number in the 133.1s when a mousey yet somehow stunningly beautiful girl steps into the aisle and parks an elbow on the shelf at your eyeline.@@<br>
-			@@.notmc-speech; 133.1. You're looking for ghosts.@@<br>
-			@@.mc-speech; I'm looking for books, actually.@@<br>
-			@@.notmc-speech; No, you're not just browsing. I reshelved this row yesterday and I put the rare-circulation pull tag inside Hauberk's, which is the only book in here worth opening. You're the third person this week who's stopped at exactly that spine.@@<br>
-			@@.mc-thoughts; She's holding a photocopy with the corners squared. There are pen dashes on the top right that look deliberate, like she's marking which entries she's already vetted.@@<br>
-			@@.notmc-speech; I'm Brook, by the way. I work in reference, mostly. But I do ghost research on the side, since nobody is willing to pay me to.@@<br>
-			@@.mc-speech; I'm <<= setup.Mc.name()>>. What's on the paper.@@<br>
-			@@.notmc-speech; A Mimic. Hauberk has the only first-hand account in English and the library won't let me check it out. I'll trade.@@<br>
-			@@.mc-speech; Trade what?@@<br>
-			@@.notmc-speech; I copy the page, you take me on a hunt. A real hunt. Then we see whether either of us wants a round two.@@<br>
-			@@.mc-thoughts; She's waiting, apprehensive but determined. I didn't expect this, but the other women here sure seem to cling onto ghost hunters...@@<br>
-			@@.mc-speech; Done.@@<br>
-			@@.notmc-speech; I'm here most days. Find me when you've got a night for me.@@<br>
+			<<thought>>You're tracking down a call number in the 133.1s when a mousey yet somehow stunningly beautiful girl steps into the aisle and parks an elbow on the shelf at your eyeline.<</thought>><br>
+			<<say>>133.1. You're looking for ghosts.<</say>><br>
+			<<mc>>I'm looking for books, actually.<</mc>><br>
+			<<say>>No, you're not just browsing. I reshelved this row yesterday and I put the rare-circulation pull tag inside Hauberk's, which is the only book in here worth opening. You're the third person this week who's stopped at exactly that spine.<</say>><br>
+			<<thought>>She's holding a photocopy with the corners squared. There are pen dashes on the top right that look deliberate, like she's marking which entries she's already vetted.<</thought>><br>
+			<<say>>I'm Brook, by the way. I work in reference, mostly. But I do ghost research on the side, since nobody is willing to pay me to.<</say>><br>
+			<<mc>>I'm <<= setup.Mc.name()>>. What's on the paper.<</mc>><br>
+			<<say>>A Mimic. Hauberk has the only first-hand account in English and the library won't let me check it out. I'll trade.<</say>><br>
+			<<mc>>Trade what?<</mc>><br>
+			<<say>>I copy the page, you take me on a hunt. A real hunt. Then we see whether either of us wants a round two.<</say>><br>
+			<<thought>>She's waiting, apprehensive but determined. I didn't expect this, but the other women here sure seem to cling onto ghost hunters...<</thought>><br>
+			<<mc>>Done.<</mc>><br>
+			<<say>>I'm here most days. Find me when you've got a night for me.<</say>><br>
 			<br>
-			@@.mc-speech; I'll be sure to keep you in mind.@@<br>
-			@@.mc-thoughts; She hands you the photocopy and goes back to whatever she was doing before she chose to be standing here. A mimic. You'd been hearing the word but couldn't find anything concrete.@@<br>
+			<<mc>>I'll be sure to keep you in mind.<</mc>><br>
+			<<thought>>She hands you the photocopy and goes back to whatever she was doing before she chose to be standing here. A mimic. You'd been hearing the word but couldn't find anything concrete.<</thought>><br>
 			<br>
 			@@.mc-action; The information about the Mimic ghost has been added to your Ghostopedia.@@<br>
 			<br>
@@ -38,10 +38,10 @@
 			<br>
 			@@.mc-action; You can now ask Brook to join you on a ghost hunt!@@<br>
 		<<else>>
-			@@.mc-thoughts; After a few minutes of searching, you found Brook@@<br>
+			<<thought>>After a few minutes of searching, you found Brook<</thought>><br>
 
 			<<if setup.Library.brookSoloHuntReporting()>>
-				@@.mc-speech; [[Ask her how her ghost hunt went.|BrookHuntEndAlone]]@@<br>
+				<<mc>>[[Ask her how her ghost hunt went.|BrookHuntEndAlone]]<</mc>><br>
 			<<else>>
 				@@.mc-speech;<<link "Ask Brooke to join you for ghost hunting tonight.">>
 					<<run setup.Library.pickBrookAsCompanion()>>

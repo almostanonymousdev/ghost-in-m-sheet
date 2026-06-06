@@ -1,12 +1,12 @@
 :: SummonTentacles [nobr] {"position":"600,3000","size":"100,100"}
 <<video "mechanics/exorcism/tentacles1.mp4">>
-@@.mc-thoughts; You were on the verge of falling asleep when tentacles suddenly appeared from nowhere, instantly wrapping around your body, giving you no time to react. They immediately penetrated your mouth and pussy, fucking you hard. One slid down your throat, making you choke on its size, while the other entered your pussy, making you moan with @@ <<linkappend "@@.usebtn; each thrust.@@">>
+<<thought>>You were on the verge of falling asleep when tentacles suddenly appeared from nowhere, instantly wrapping around your body, giving you no time to react. They immediately penetrated your mouth and pussy, fucking you hard. One slid down your throat, making you choke on its size, while the other entered your pussy, making you moan with<</thought>> <<linkappend "@@.usebtn; each thrust.@@">>
 	<<video "mechanics/exorcism/tentacles2.mp4">>
-	@@.mc-thoughts; Then they switch positions, one tentacle enters your pussy, the other your ass, fucking you simultaneously, each movement sending a new wave of pleasure through you.@@<br>
-	@@.mc-speech; Oh God, I summoned them... oh... if they don't stop... I... @@
+	<<thought>>Then they switch positions, one tentacle enters your pussy, the other your ass, fucking you simultaneously, each movement sending a new wave of pleasure through you.<</thought>><br>
+	<<mc>>Oh God, I summoned them... oh... if they don't stop... I...<</mc>>
 	<<linkappend "@@.usebtn; I'll cum...@@">>
 		<<video "mechanics/exorcism/tentacles3.mp4">>
-		@@.mc-thoughts;  Finally, the tentacles come inside you, filling all your holes with cum, stuffing you to the brim, making you shudder from the intensity of the sensations.@@<br><br>
+		<<thought>>Finally, the tentacles come inside you, filling all your holes with cum, stuffing you to the brim, making you shudder from the intensity of the sensations.<</thought>><br><br>
 		@@.backbtn; [[Sleep|Sleep][setup.Home.setSummonText(1)]]@@<br>
 	<</linkappend>>
 <</linkappend>>

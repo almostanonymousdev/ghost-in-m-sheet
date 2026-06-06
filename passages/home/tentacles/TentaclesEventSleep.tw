@@ -1,17 +1,17 @@
 :: TentaclesEventSleep [nobr] {"position":"600,4300","size":"100,100"}
 <<run setup.Home.resetTentaclesCooldown()>>
 <<video "mechanics/tentacles/sleep1.mp4">>
-@@.mc-thoughts;Through your sleep, you feel something's off, like something is close to you.@@<br>
+<<thought>>Through your sleep, you feel something's off, like something is close to you.<</thought>><br>
 <<linkappend "@@.usebtn; Wake up@@">>
 	<<if setup.Home.tentaclesStageSleep() eq 0>>
 		<<run setup.Home.setTentaclesStageSleep(1)>>
 		<<goto "Bedroom">>
 	<<else>>
 		<<image "mechanics/tentacles/sleep2.jpg" { width: "100%" }>><br>
-		@@.mc-thoughts;You wake up in a gloomy room, nothing around but darkness.@@<br>
-		@@.mc-speech;What the fuck? Where am I?@@<br>
-		@@.mc-thoughts;You notice several tentacles crawling towards you.@@<br>
-		@@.mc-speech;Oh no~@@<br>
+		<<thought>>You wake up in a gloomy room, nothing around but darkness.<</thought>><br>
+		<<mc>>What the fuck? Where am I?<</mc>><br>
+		<<thought>>You notice several tentacles crawling towards you.<</thought>><br>
+		<<vocal mc>>Oh no<</vocal>><br>
 		<<linkreplace "@@.usebtn; They slowly creep towards you@@">>
 			<<if setup.Home.tentaclesStageSleep() eq 1>>
 				<<run setup.Home.setTentaclesStageSleep(2)>>
@@ -20,9 +20,9 @@
 				<span id ="tentaclesEventSleep">
 				<<video "mechanics/tentacles/sleep3.mp4">></span>
 				<<set _videoIndex to 3>>
-				@@.mc-thoughts;Wrapping around your arms and legs, one tentacle freely penetrated your hot, wet pussy and started to fuck you hard.@@<br>
-				@@.mc-speech;Oh, fuck~ what's happening~ Ah@@<br>
-				@@.mc-thoughts;Another tentacle appeared,@@
+				<<thought>>Wrapping around your arms and legs, one tentacle freely penetrated your hot, wet pussy and started to fuck you hard.<</thought>><br>
+				<<vocal mc>>Oh, fuck<</vocal>> <<mc>>What's happening<</mc>> <<vocal mc>>Ah<</vocal>><br>
+				<<thought>>Another tentacle appeared,<</thought>>
 				<<link "@@.usebtn;  teasing your sensitive clit@@">>
 					<<set _videoIndex to (_videoIndex) % 2 +3>>
 					<<replace "#tentaclesEventSleep">>
@@ -30,10 +30,10 @@
 						<<video "mechanics/tentacles/sleep" + _videoIndex+`.mp4`>>
 					<</replace>>
 				<</link>>
-				@@.mc-thoughts; , making your body shiver with pleasure.@@<br>
-				@@.mc-speech;Oh not two at once@@<br>
-				@@.mc-thoughts;Time felt endless as they seemed to toy with you, speeding up and slowing down, denying you your orgasm.@@<br>
-				@@.mc-thoughts;You felt the tentacle inside your pussy tense up, then it started to cum, flooding you with warm, white fluid, @@
+				<<thought>>, making your body shiver with pleasure.<</thought>><br>
+				<<mc>>Oh not two at once<</mc>><br>
+				<<thought>>Time felt endless as they seemed to toy with you, speeding up and slowing down, denying you your orgasm.<</thought>><br>
+				<<thought>>You felt the tentacle inside your pussy tense up, then it started to cum, flooding you with warm, white fluid,<</thought>>
 				<<linkappend "@@.usebtn; pushing you over the edge.@@">>
 					<<video "mechanics/tentacles/sleep5.mp4">>
 					@@.mc-speech;Aahhh ~fuck@@

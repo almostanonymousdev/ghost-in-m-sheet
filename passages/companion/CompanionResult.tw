@@ -2,18 +2,19 @@
 <<set _cName to setup.Companion.name()>>
 <<if State.variables.chosenPlan eq "Plan2">>
 	<<if setup.Companion.hasCursedItem()>>
-		@@.notmc-speech; It seems you managed to find the cursed object faster than me, well done.@@<br>
-		@@.notmc-speech; But why did you send me to look for it if you started searching for it yourself?@@<br>
-		@@.notmc-speech; Actually, nevermind, let's continue.@@<br>
+		<<say>>It seems you managed to find the cursed object faster than me, well done.<</say>><br>
+		<<say>>But why did you send me to look for it if you started searching for it yourself?<</say>><br>
+		<<say>>Actually, nevermind, let's continue.<</say>><br>
 	<<else>>
 		@@.notmc-speech; I'm sure@@ <<linkappend "@@.notmc-speechLink; it's a cursed item...@@">>
 			<br>
 			<<set _found to setup.Companion.rollFoundCursedItem()>>
 			@@.mc-speech; <<= _found.speech>>@@<br>
 			<<image _found.img { width: "30%" }>>
-			<br>@@.mc-speech; Well, we'll have to take this to the witch.@@<br>
-			@@.mc-thoughts; She definitely took longer than expected finding that item... I think I know what kept her for so long...<br>
-			As soon as I thought about it, I started to feel more... aroused<br>@@
+			<br><<mc>>Well, we'll have to take this to the witch.<</mc>><br>
+			<<thought>>She definitely took longer than expected finding that item... I think I know what kept her for so long...<br>
+				As soon as I thought about it, I started to feel more... aroused<br>
+			<</thought>>
 			+30 <<statIcon setup.StatIcon.HEALTH>><br><<addLust 30>>
 			<br>
 			@@.mc-action; <<= _cName>> found the cursed item!@@<br>
@@ -35,7 +36,7 @@
 
 	<<elseif _randomEvidence eq "gwb">>
 		@@.notmc-speech; evidence - Ghost Writing Book @@ <<image "ui/img/gwb.png" { style: "position: relative; top: 0.375em; width:5%;" }>><br>
-		@@.notmc-speech; Do you want to see this?@@<br>
+		<<say>>Do you want to see this?<</say>><br>
 		<<image setup.Companion.pickGwbImage() "evidenceImgs">>
 		<br>
 		<br>
@@ -78,7 +79,7 @@
 	<</if>>
 
 <<elseif State.variables.chosenPlan eq "Plan4">>
-	@@.notmc-speech;  the ghost's favorite room -- it's <<ghostRoom>>@@<br>
+	<<say>> the ghost's favorite room -- it's <<ghostRoom>><</say>><br>
 	<br>
 	@@.mc-action; <<= _cName>> found the ghost's favorite room!@@<br>
 	<br>

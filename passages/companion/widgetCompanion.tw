@@ -53,12 +53,12 @@
 	<<set _obj to _ac ? _ac.pronObj : "her">>
 	<<linkreplace `"@@.usebtn; Give " + _obj + " the sanity pills.@@"`>>
 		<<if not setup.Companion.hasSanityPills()>>
-			@@.mc-thoughts; I don't have those pills.@@
+			<<thought>>I don't have those pills.<</thought>>
 		<<elseif not setup.Companion.companionNeedsSanity()>>
-			@@.mc-thoughts; I don't think that's needed right now.@@
+			<<thought>>I don't think that's needed right now.<</thought>>
 		<<else>>
-			@@.mc-speech; I want you to take these sanity pills. Don't worry, they will help you.@@<br>
-			@@.notmc-speech; Thank you, I feel a bit better.@@<br>
+			<<mc>>I want you to take these sanity pills. Don't worry, they will help you.<</mc>><br>
+			<<say>>Thank you, I feel a bit better.<</say>><br>
 			<<run setup.Companion.giveSanityPill()>>
 			<b>-1 sanity pills</b><br>
 			<b><<= setup.Companion.name()>>'s sanity has increased by 30!</b><br>
@@ -95,9 +95,9 @@
 		<<capture _cName>>
 			@@.mc-speech;<<link `"Ask " + _cName + " to join you for ghost hunting tonight."`>>
 				<<run setup.Companion.pickCompanion(_cName)>>
-				<<replace "#companionInfoAnswer">>@@.mc-speech; I want you to join me for ghost hunting today@@<br>
-					@@.notmc-speech; Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house, okay?@@<br>
-					@@.mc-speech; Yeah, let's do that.@@
+				<<replace "#companionInfoAnswer">><<mc>>I want you to join me for ghost hunting today<</mc>><br>
+					<<say>>Yes, of course. I'll be ready. Let's meet by the entrance to the haunted house, okay?<</say>><br>
+					<<mc>>Yeah, let's do that.<</mc>>
 				<</replace>>
 			<</link>>@@<br>
 
@@ -109,7 +109,7 @@
 			<span class="CompanionInfoAskForHuntAlone">
 			@@.mc-speech;<<link "I'd like you to go ghost hunting alone.">>
 				<<run setup.Companion.deselectCompanion(_cName)>>
-				<<replace "#companionInfoAnswer">>@@.notmc-speech; I think I'm already experienced enough to do it on my own. Where should I go?@@<br>
+				<<replace "#companionInfoAnswer">><<say>>I think I'm already experienced enough to do it on my own. Where should I go?<</say>><br>
 
 					@@.enterbtn;<<link `"Owaissa Street - " + setup.Companion.soloOdds(_cName, "Owaissa") + " %"`>>
 						<<run setup.Companion.sendCompanionSolo(_cName, "Owaissa")>>
@@ -117,7 +117,7 @@
 							<<replace "#companionInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
 							<</replace>>
 						<<else>>
-							<<replace "#companionInfoAnswerTwo">>@@.notmc-speech;Owaissa Street? Hmm... Yes, of course. I think I can handle it.@@
+							<<replace "#companionInfoAnswerTwo">><<say>>Owaissa Street? Hmm... Yes, of course. I think I can handle it.<</say>>
 							<</replace>>
 						<</if>>
 					<</link>>@@
@@ -128,7 +128,7 @@
 							<<replace "#companionInfoAnswerTwo">>@@.warningtext; I don't have enough money to buy her a contract @@
 							<</replace>>
 						<<else>>
-							<<replace "#companionInfoAnswerTwo">>@@.notmc-speech;Elm Street? Hmm... Yes, of course. I think I can handle it.@@
+							<<replace "#companionInfoAnswerTwo">><<say>>Elm Street? Hmm... Yes, of course. I think I can handle it.<</say>>
 							<</replace>>
 						<</if>>
 					<</link>>@@@@color: green; <b>-20$</b>@@<br>

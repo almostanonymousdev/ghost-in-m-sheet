@@ -10,32 +10,32 @@
 	<<linkreplace "@@.usebtn;Compare the house with the photo@@">>
 		<<removeclass "#rescueHouseHidden" "hideRescueHouse">>
 		<<if setup.MissingWomen.isCorrectHouse()>>
-			@@.mc-speech; It seems like this is the house.@@
+			<<mc>>It seems like this is the house.<</mc>>
 		<<else>>
-			@@.mc-speech; No, doesn't really look like it.@@
+			<<mc>>No, doesn't really look like it.<</mc>>
 		<</if>>
 	<</linkreplace>><br>
 <</if>>
 <<addTime 20>>
 <<if setup.MissingWomen.searchTooLate()>>
-	@@.mc-speech; The nun said that after 18:00 it's pointless to keep searching. It seems I'm too late. I should go back to her and tell her I failed.@@<br>
+	<<mc>>The nun said that after 18:00 it's pointless to keep searching. It seems I'm too late. I should go back to her and tell her I failed.<</mc>><br>
 <<else>>
 	<<if setup.MissingWomen.canSearchHouse()>>
 		<<linkreplace '@@.usebtn; Search the house @@ <<statIcon setup.StatIcon.ENERGY>>'>>
 			<<run setup.Mc.addEnergy(-1)>>
 			<<if not setup.MissingWomen.isCorrectHouse()>>
-				@@.mc-thoughts; You search the house for 30 minutes, but find no one.@@
+				<<thought>>You search the house for 30 minutes, but find no one.<</thought>>
 				<<addTime 30>>
 			<<elseif setup.MissingWomen.canResolveRescue()>>
 				<<goto "RescueEvent">>
 			<<elseif setup.MissingWomen.questFailed()>>
-				@@.mc-speech; The nun said that after 18:00 it's pointless to keep searching. It seems I'm too late. I should go back to her and tell her I failed.@@<br>
+				<<mc>>The nun said that after 18:00 it's pointless to keep searching. It seems I'm too late. I should go back to her and tell her I failed.<</mc>><br>
 			<<else>>
-				@@.mc-thoughts; You search around but can't find anything yet. Maybe you should come back later.@@
+				<<thought>>You search around but can't find anything yet. Maybe you should come back later.<</thought>>
 			<</if>>
 		<</linkreplace>>
 	<<else>>
-		@@.mc-speech;I'm too tired to search the house.@@<br>
+		<<mc>>I'm too tired to search the house.<</mc>><br>
 	<</if>>
 <</if>><br>
 <br>

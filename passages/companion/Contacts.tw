@@ -17,9 +17,9 @@
 			<<image _c.portraitPath() "contactsImages">><br>
 			<<if setup.Time.hours() lte 5>>
 				<<if setup.Companion.hasFinishedSoloHunt(_name)>>
-					@@.mc-thoughts; She is currently on a ghost hunt.@@
+					<<thought>>She is currently on a ghost hunt.<</thought>>
 				<<else>>
-					@@.mc-thoughts; She's sleeping@@<br>
+					<<thought>>She's sleeping<</thought>><br>
 				<</if>>
 			<<elseif setup.Companion.isPossessed(_name)>>
 				<<capture _c>>
@@ -27,7 +27,7 @@
 					<</linkreplace>>
 				<</capture>>
 			<<elseif setup.Companion.isUnavailable(_name)>>
-				@@.mc-thoughts;<<= _c.withRainHint>>@@
+				<<thought>><<= _c.withRainHint>><</thought>>
 			<<else>>
 				<<capture _c>>
 					@@.enterbtn;<<link "Text her" `_c.infoPassage`>>
@@ -35,7 +35,7 @@
 				<</capture>>
 			<</if>>
 		<<else>>
-			@@.mc-thoughts; <<= _c.contactsLockedHint>>@@<br>
+			<<thought>><<= _c.contactsLockedHint>><</thought>><br>
 			<<image "ui/img/question-mark.png" "contactsImages">>
 		<</if>>
 	</div>

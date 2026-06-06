@@ -8,14 +8,14 @@
 <</if>>
 <<if _check eq 4>><<image "mechanics/porn/4.webp" { width: "70%" }>>
 <</if>><br>
-@@.mc-thoughts; A wave of pleasure ran through you, making your body tremble with delight, taking your mind somewhere far from reality@@<br>
+<<thought>>A wave of pleasure ran through you, making your body tremble with delight, taking your mind somewhere far from reality<</thought>><br>
 <<statIcon setup.StatIcon.HEALTH>> decreased! <br>
 <<if setup.Mc.corruption() lte 4>>
 	+0.2 <<statIcon setup.StatIcon.CORRUPTION>>
 	<<run setup.Mc.addCorruption(0.2)>><br>
 <</if>>
 
-@@.mc-speech; Fuuhh~, i need to rest a bit@@<br>
+<<vocal mc>>Fuuhh<</vocal>> <<mc>>I need to rest a bit<</mc>><br>
 <<run setup.Mc.setLust(0)>>
 <br>
 @@.backbtn;[[Rest and leave|Livingroom]]@@<br>
