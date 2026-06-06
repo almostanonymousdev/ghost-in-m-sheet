@@ -14,16 +14,17 @@
             if(!(min >= 0 && min <= 59) && (hour >= 0 && hour <=23)) {
                 return this.error('The Value of `<<displayTime>>` on Passage: '+ SugarCube.State.passage + " is out of bounds! Value: '"+ this.args[0] + "'");
             }
-            
+
+            const timeFormat = SugarCube.settings?.timeFormat || settings?.timeFormat || "24 Hour";
             let displayMin = String(min).padStart(2, "0");
 
-            if (SugarCube.settings.timeFormat == "24 Hour") {
+            if (timeFormat == "24 Hour") {
                 let displayHour = String(hour).padStart(2, "0");
 
                 this.output.append(displayHour + ":" + displayMin);
             }
 
-            if (SugarCube.settings.timeFormat == "12 Hour") {
+            if (timeFormat == "12 Hour") {
                 let suffix = hour >= 12 ? "PM" : "AM";
                 let displayHour = hour % 12 || 12;
 
