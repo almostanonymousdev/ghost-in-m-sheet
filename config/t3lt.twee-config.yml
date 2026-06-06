@@ -450,6 +450,11 @@ sugarcube-2:
         earnedMoney increment, and the Back button. No args."
     addTime:
       name: addTime
+    displayTime:
+      name: displayTime
+      description: "Renders Text properly depending on users Time Format in Settings.
+        uses Military Time as an input aka 0000 is 12:00 AM, 0830 is 08:30 AM, 1821 is
+        16:21 PM"
     addLust:
       name: addLust
     backOrReturn:
