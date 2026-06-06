@@ -209,23 +209,19 @@
 	<<elseif _kind eq "clothesStolenPanties" and setup.Wardrobe.isPantiesStolen()>>
 		@@.mc-thoughts; Your stolen panties, balled up out of sight.@@<br>
 		@@.mc-action; You slip them back on.@@<br><br>
-		<<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>>
+		<<run setup.Wardrobe.restoreGarment("panties")>>
 	<<elseif _kind eq "clothesStolenBra" and setup.Wardrobe.isBraStolen()>>
 		@@.mc-thoughts; Your stolen bra, balled up out of sight.@@<br>
 		@@.mc-action; You fasten it back on.@@<br><br>
-		<<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>>
+		<<run setup.Wardrobe.restoreGarment("bra")>>
 	<<elseif _kind eq "clothesStolenShirt" and setup.Wardrobe.isShirtStolen()>>
 		@@.mc-thoughts; Your stolen top, balled up out of sight.@@<br>
 		@@.mc-action; You pull it back on.@@<br><br>
-		<<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>>
+		<<run setup.Wardrobe.restoreGarment("shirt")>>
 	<<elseif _kind eq "clothesStolenBottom" and setup.Wardrobe.isBottomStolen()>>
 		@@.mc-thoughts; Your stolen bottoms, balled up out of sight.@@<br>
 		@@.mc-action; You step back into them.@@<br><br>
-		<<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>>
-		<<run State.variables.isBottomStolen = false>>
-		<<run State.variables.isJeansStolen = false>>
-		<<run State.variables.isShortsStolen = false>>
-		<<run State.variables.isSkirtStolen = false>>
+		<<run setup.Wardrobe.restoreGarment("bottom")>>
 	<<elseif _toolId>>
 		<<set _toolDef to setup.searchToolDefs[_toolId]>>
 		@@.mc-thoughts; A piece of hunting equipment -- the <<= setup.HuntController.humanizeLootKind(_kind)>>.@@<br>

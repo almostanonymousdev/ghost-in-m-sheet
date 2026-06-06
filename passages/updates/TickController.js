@@ -28,7 +28,7 @@ setup.Tick = (function () {
 	   if it pushed lust up so callers can refresh the meter. */
 	function applyChokerLustFloor() {
 		var s = sv();
-		if (s.neckChokerState1 !== setup.ClothingState.WORN) return false;
+		if (!setup.Wardrobe.isChokerWorn()) return false;
 		if (!s.mc || s.mc.lust > 15) return false;
 		setup.Mc.setLust(15);
 		return true;
@@ -202,8 +202,6 @@ setup.Tick = (function () {
 	   ops; this function returns a string when a <<goto>> should fire.
 	   Bool flags returned drive in-passage <<replace>> blocks. */
 	function onPassageDone() {
-		setup.Wardrobe.refreshAggregateStates();
-
 		if (setup.Ghosts.isMimicHunt() && setup.HuntController.isHunting()) {
 			setup.Posession.rollMimicType(
 				setup.Ghosts.names({ exclude: ["Mimic"] })

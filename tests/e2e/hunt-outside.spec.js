@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { openGame, resetGame, getVar, setVar, goToPassage, callSetup, ensureOpenPage } = require('../helpers');
+const { openGame, resetGame, getVar, setVar, goToPassage, callSetup, ensureOpenPage, setWardrobeSlot, setWardrobeStolen } = require('../helpers');
 
 /* HuntOutside / HuntIdentify: from the hunt hallway, the player can
    step Outside and choose to identify the ghost, flee the haunt, or
@@ -232,21 +232,16 @@ test.describe('E2E: Hunt Outside menu', () => {
      The identify/contract/flee options drop out and only "Go back
      inside" remains. Mirrors the same gate in HuntOverExhaustion. */
   async function stripBottomAndStash(page) {
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      const NW = SugarCube.setup.ClothingState.NOT_WORN;
-      const WORN = SugarCube.setup.ClothingState.WORN;
-      V.tshirtState  = WORN;
-      V.braState     = WORN;
-      V.jeansState   = NW;
-      V.shortsState  = NW;
-      V.skirtState   = NW;
-      V.pantiesState = NW;
-      V.isPantiesStolen = true;
-      V.isBottomStolen  = false;
-      V.isShirtStolen   = false;
-      V.isBraStolen     = false;
-    });
+    await setWardrobeSlot(page, 'tshirt', 'worn');
+    await setWardrobeSlot(page, 'bra', 'worn');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not worn');
+    await setWardrobeSlot(page, 'panties', 'not worn');
+    await setWardrobeStolen(page, 'panties', true);
+    await setWardrobeStolen(page, 'bottom', false);
+    await setWardrobeStolen(page, 'shirt', false);
+    await setWardrobeStolen(page, 'bra', false);
   }
 
   test('low exhibitionism + bottom stripped: leave options hidden, only Go back inside remains', async () => {
@@ -295,21 +290,16 @@ test.describe('E2E: Hunt Outside menu', () => {
 
   test('low exhibitionism + fully clothed: gate does not fire, full menu rendered', async () => {
     await startRun(page);
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      const WORN = SugarCube.setup.ClothingState.WORN;
-      const NW = SugarCube.setup.ClothingState.NOT_WORN;
-      V.tshirtState  = WORN;
-      V.braState     = WORN;
-      V.jeansState   = WORN;
-      V.shortsState  = NW;
-      V.skirtState   = NW;
-      V.pantiesState = WORN;
-      V.isPantiesStolen = false;
-      V.isBottomStolen  = false;
-      V.isShirtStolen   = false;
-      V.isBraStolen     = false;
-    });
+    await setWardrobeSlot(page, 'tshirt', 'worn');
+    await setWardrobeSlot(page, 'bra', 'worn');
+    await setWardrobeSlot(page, 'jeans', 'worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not worn');
+    await setWardrobeSlot(page, 'panties', 'worn');
+    await setWardrobeStolen(page, 'panties', false);
+    await setWardrobeStolen(page, 'bottom', false);
+    await setWardrobeStolen(page, 'shirt', false);
+    await setWardrobeStolen(page, 'bra', false);
     await setVar(page, 'mc.exhibitionism', 0);
 
     await clickLink(page, 'Outside', 'HuntOutside');
@@ -324,21 +314,16 @@ test.describe('E2E: Hunt Outside menu', () => {
 
   test('low exhibitionism + top stripped + still has bottoms: top-only gate fires', async () => {
     await startRun(page);
-    await page.evaluate(() => {
-      const V = SugarCube.State.variables;
-      const WORN = SugarCube.setup.ClothingState.WORN;
-      const NW = SugarCube.setup.ClothingState.NOT_WORN;
-      V.tshirtState  = NW;
-      V.braState     = NW;
-      V.jeansState   = WORN;
-      V.shortsState  = NW;
-      V.skirtState   = NW;
-      V.pantiesState = WORN;
-      V.isPantiesStolen = false;
-      V.isBottomStolen  = false;
-      V.isShirtStolen   = true;
-      V.isBraStolen     = false;
-    });
+    await setWardrobeSlot(page, 'tshirt', 'not worn');
+    await setWardrobeSlot(page, 'bra', 'not worn');
+    await setWardrobeSlot(page, 'jeans', 'worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not worn');
+    await setWardrobeSlot(page, 'panties', 'worn');
+    await setWardrobeStolen(page, 'panties', false);
+    await setWardrobeStolen(page, 'bottom', false);
+    await setWardrobeStolen(page, 'shirt', true);
+    await setWardrobeStolen(page, 'bra', false);
     await setVar(page, 'mc.exhibitionism', 0);
 
     await clickLink(page, 'Outside', 'HuntOutside');

@@ -49,7 +49,7 @@
 	<span id="exhaustionGrab">
 	<<if setup.Wardrobe.isPantiesStolen() and _showBottom>>
 		@@.usebtn;<<link "Grab your panties">><<replace "#exhaustionGrab">>
-			<<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>>
+			<<run setup.Wardrobe.restoreGarment("panties")>>
 			<<run setup.Wardrobe.loseAllStolen()>>
 			@@.mc-action; You snatch your panties and stumble for the exit. The rest stays behind.@@<br>
 			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
@@ -58,7 +58,7 @@
 	<</if>>
 	<<if setup.Wardrobe.isBottomStolen() and _showBottom>>
 		@@.usebtn;<<link "Grab your bottoms">><<replace "#exhaustionGrab">>
-			<<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = false>><<run State.variables.isJeansStolen = false>><<run State.variables.isShortsStolen = false>><<run State.variables.isSkirtStolen = false>>
+			<<run setup.Wardrobe.restoreGarment("bottom")>>
 			<<run setup.Wardrobe.loseAllStolen()>>
 			@@.mc-action; You snatch your bottoms and stumble for the exit. The rest stays behind.@@<br>
 			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
@@ -67,7 +67,7 @@
 	<</if>>
 	<<if setup.Wardrobe.isShirtStolen() and _showTop>>
 		@@.usebtn;<<link "Grab your shirt">><<replace "#exhaustionGrab">>
-			<<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>>
+			<<run setup.Wardrobe.restoreGarment("shirt")>>
 			<<run setup.Wardrobe.loseAllStolen()>>
 			@@.mc-action; You snatch your shirt and stumble for the exit. The rest stays behind.@@<br>
 			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
@@ -76,7 +76,7 @@
 	<</if>>
 	<<if setup.Wardrobe.isBraStolen() and _showTop>>
 		@@.usebtn;<<link "Grab your bra">><<replace "#exhaustionGrab">>
-			<<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>>
+			<<run setup.Wardrobe.restoreGarment("bra")>>
 			<<run setup.Wardrobe.loseAllStolen()>>
 			@@.mc-action; You snatch your bra and stumble for the exit. The rest stays behind.@@<br>
 			@@.movebtn;[[Drag yourself home|CityMap][setup.Time.addHours(1)]]@@
@@ -174,10 +174,10 @@
 @@.mc-thoughts; Dawn. The house quiets like someone hung up. Time to add up what you have and name it.@@<br>
 <<if setup.Wardrobe.hasClothesStolen()>>
 	@@.mc-thoughts; And -- right -- your clothes. You sweep the rooms it stashed them in, dress on the move, and don't look back at the door.@@
-	<<if setup.Wardrobe.isPantiesStolen()>><<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>><</if>>
-	<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>><<run State.variables.isBottomStolen = false>><<run State.variables.isJeansStolen = false>><<run State.variables.isShortsStolen = false>><<run State.variables.isSkirtStolen = false>><</if>>
-	<<if setup.Wardrobe.isShirtStolen()>><<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>><</if>>
-	<<if setup.Wardrobe.isBraStolen()>><<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>><</if>>
+	<<if setup.Wardrobe.isPantiesStolen()>><<run setup.Wardrobe.restoreGarment("panties")>><</if>>
+	<<if setup.Wardrobe.isBottomStolen()>><<run setup.Wardrobe.restoreGarment("bottom")>><</if>>
+	<<if setup.Wardrobe.isShirtStolen()>><<run setup.Wardrobe.restoreGarment("shirt")>><</if>>
+	<<if setup.Wardrobe.isBraStolen()>><<run setup.Wardrobe.restoreGarment("bra")>><</if>>
 <</if>>
 
 <<run setup.HuntController.markHuntOver()>>

@@ -55,6 +55,30 @@ setup.notPurchased = function(varName) {
 	</div>
 <</widget>>
 
+<<widget "clothingCard">>
+	<<set _id to _args[0]>>
+	<<set _returnPassage to _args[1]>>
+	<<set _item to setup.Wardrobe.itemById(_id)>>
+	<<set _img to "outfits/wardrobe/" + _item.img>>
+	<<set _bonus to (typeof _args[2] !== "undefined") ? _args[2] : "+" + _item.beauty + " beauty">>
+	<div class="housecard">
+	<<if setup.Wardrobe.notPurchased(_id)>>
+		<<image _img "iconPx">><br>
+		<<if _bonus>><span class="mc-thoughts">_bonus</span><br>
+		<</if>>
+		<span class="priceAmount"><<= _item.price>>$</span><br>
+		<<if setup.Mc.money() gte _item.price>>
+			<<capture _id, _returnPassage>>
+				@@.buyItemLink;<<link "Buy" _returnPassage>>
+					<<run setup.Wardrobe.purchase(_id)>>
+				<</link>>@@<br>
+			<</capture>>
+		<<else>>@@.mc-thoughts; I don't have enough money@@
+		<</if>>
+	<</if>>
+	</div>
+<</widget>>
+
 <<widget "shopCardCorruption">>
 	<<set _varName to _args[0]>>
 	<<set _img to _args[1]>>

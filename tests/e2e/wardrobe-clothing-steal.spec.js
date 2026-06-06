@@ -1,210 +1,218 @@
 const { test, expect } = require('../fixtures');
-const { setVar, getVar, callSetup, resetGame } = require('../helpers');
+const {
+  callSetup, resetGame,
+  setWardrobeItem, getWardrobeItem, setWardrobeSlot,
+  getWardrobeStolen, getWardrobeLost,
+} = require('../helpers');
+
+/* Equip a catalogue item through the real Wardrobe.equip path. `id` is the
+ * canonical wardrobe id ("bra1", "jeans1", "tshirt2") — there are no flat
+ * $<name>State save keys any more, everything lives in $wardrobe. */
+async function equipById(page, groupName, id) {
+  await page.evaluate(({ g, i }) => {
+    const grp = SugarCube.setup.WARDROBE_GROUPS.find((x) => x.name === g);
+    const item = grp.items.find((it) => it.id === i);
+    SugarCube.setup.Wardrobe.equip(grp, item);
+  }, { g: groupName, i: id });
+}
+
+async function unequipById(page, groupName, id) {
+  await page.evaluate(({ g, i }) => {
+    const grp = SugarCube.setup.WARDROBE_GROUPS.find((x) => x.name === g);
+    const item = grp.items.find((it) => it.id === i);
+    SugarCube.setup.Wardrobe.unequip(grp, item);
+  }, { g: groupName, i: id });
+}
 
 test.describe('Wardrobe — equip / unequip / beauty roundtrip', () => {
   test('equipping a bra adds beauty; unequipping removes it', async ({ game: page }) => {
     await callSetup(page, `setup.Mc.setBeauty(10)`);
-    await setVar(page, 'braState1', 'not worn');
-    await page.evaluate(() => {
-      const grp = SugarCube.setup.WARDROBE_GROUPS.find(g => g.name === 'bra');
-      const item = grp.items.find(i => i.var === 'braState1');
-      SugarCube.setup.Wardrobe.equip(grp, item);
-    });
-    expect(await getVar(page, 'braState1')).toBe('worn');
+    await setWardrobeItem(page, 'bra1', 'not worn');
+    await equipById(page, 'bra', 'bra1');
+    expect(await getWardrobeItem(page, 'bra1')).toBe('worn');
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(12);
 
-    await page.evaluate(() => {
-      const grp = SugarCube.setup.WARDROBE_GROUPS.find(g => g.name === 'bra');
-      const item = grp.items.find(i => i.var === 'braState1');
-      SugarCube.setup.Wardrobe.unequip(grp, item);
-    });
-    expect(await getVar(page, 'braState1')).toBe('not worn');
+    await unequipById(page, 'bra', 'bra1');
+    expect(await getWardrobeItem(page, 'bra1')).toBe('not worn');
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(10);
   });
 
   test('equipping a higher tier swaps off the previous tier', async ({ game: page }) => {
     await callSetup(page, `setup.Mc.setBeauty(10)`);
-    await setVar(page, 'braState1', 'not worn');
-    await setVar(page, 'braState2', 'not worn');
+    await setWardrobeItem(page, 'bra1', 'not worn');
+    await setWardrobeItem(page, 'bra2', 'not worn');
 
-    await page.evaluate(() => {
-      const grp = SugarCube.setup.WARDROBE_GROUPS.find(g => g.name === 'bra');
-      const item = grp.items.find(i => i.var === 'braState1');
-      SugarCube.setup.Wardrobe.equip(grp, item);
-    });
+    await equipById(page, 'bra', 'bra1');
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(12);
 
-    await page.evaluate(() => {
-      const grp = SugarCube.setup.WARDROBE_GROUPS.find(g => g.name === 'bra');
-      const item = grp.items.find(i => i.var === 'braState2');
-      SugarCube.setup.Wardrobe.equip(grp, item);
-    });
+    await equipById(page, 'bra', 'bra2');
     // Old bra-1 (+2) gone, bra-2 (+4) on → net +4 from baseline 10
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(14);
-    expect(await getVar(page, 'braState1')).toBe('not worn');
-    expect(await getVar(page, 'braState2')).toBe('worn');
+    expect(await getWardrobeItem(page, 'bra1')).toBe('not worn');
+    expect(await getWardrobeItem(page, 'bra2')).toBe('worn');
   });
 });
 
 test.describe('Wardrobe — steal / restore mechanics', () => {
-  async function equip(p, groupName, varName) {
-    await p.evaluate(({ g, v }) => {
-      const grp = SugarCube.setup.WARDROBE_GROUPS.find(x => x.name === g);
-      const item = grp.items.find(i => i.var === v);
-      SugarCube.setup.Wardrobe.equip(grp, item);
-    }, { g: groupName, v: varName });
-  }
-
-  test('stealWornInGroup steals a worn bra and refunds its beauty', async ({ game: page }) => {
+  test('stealGarment steals a worn bra and refunds its beauty', async ({ game: page }) => {
     await callSetup(page, `setup.Mc.setBeauty(10)`);
-    await equip(page, 'bra', 'braState1');
+    await equipById(page, 'bra', 'bra1');
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(12);
-    await setVar(page, 'braState', 'worn');
 
-    const stole = await page.evaluate(() =>
-      SugarCube.setup.Wardrobe.stealWornInGroup('bra', 'braState', 'isBraStolen'));
-    expect(stole).toBe(true);
+    const stole = await callSetup(page, "setup.Wardrobe.stealGarment('bra')");
+    expect(stole).toBe('bra');
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(10);
-    expect(await getVar(page, 'isBraStolen')).toBe(true);
-    expect(await getVar(page, 'braState1')).toBe('not worn');
-    expect(await getVar(page, 'rememberTopUnder')).toBe('nobra1');
+    expect(await callSetup(page, 'setup.Wardrobe.isBraStolen()')).toBe(true);
+    expect(await getWardrobeItem(page, 'bra1')).toBe('not worn');
+    expect(await callSetup(page, 'setup.Wardrobe.rememberTopUnder()')).toBe('nobra1');
   });
 
-  test('stealWornInGroup is a no-op when nothing is worn', async ({ game: page }) => {
-    await setVar(page, 'braState', 'not worn');
-    const stole = await page.evaluate(() =>
-      SugarCube.setup.Wardrobe.stealWornInGroup('bra', 'braState', 'isBraStolen'));
-    expect(stole).toBe(false);
+  test('stealGarment is a no-op (null) when nothing is worn', async ({ game: page }) => {
+    await setWardrobeSlot(page, 'bra', 'not worn');
+    const stole = await callSetup(page, "setup.Wardrobe.stealGarment('bra')");
+    expect(stole).toBeNull();
   });
 
-  test('restoreStolenInGroup restores worn flag, beauty, and clears stolen marker', async ({ game: page }) => {
+  test('restoreGarment restores worn flag, beauty, and clears the stolen marker', async ({ game: page }) => {
     await callSetup(page, `setup.Mc.setBeauty(10)`);
-    await equip(page, 'bra', 'braState1');
+    await equipById(page, 'bra', 'bra1');
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(12);
-    await setVar(page, 'braState', 'worn');
 
-    await page.evaluate(() =>
-      SugarCube.setup.Wardrobe.stealWornInGroup('bra', 'braState', 'isBraStolen'));
+    await callSetup(page, "setup.Wardrobe.stealGarment('bra')");
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(10);
 
-    const restored = await page.evaluate(() =>
-      SugarCube.setup.Wardrobe.restoreStolenInGroup('bra', 'isBraStolen'));
+    const restored = await callSetup(page, "setup.Wardrobe.restoreGarment('bra')");
     expect(restored).toBe(true);
-    expect(await getVar(page, 'braState1')).toBe('worn');
+    expect(await getWardrobeItem(page, 'bra1')).toBe('worn');
     expect(await callSetup(page, 'setup.Mc.beauty()')).toBe(12);
-    expect(await getVar(page, 'isBraStolen')).toBe(false);
-    expect(await getVar(page, 'rememberTopUnder')).toBe('bra1');
+    expect(await callSetup(page, 'setup.Wardrobe.isBraStolen()')).toBe(false);
+    expect(await callSetup(page, 'setup.Wardrobe.rememberTopUnder()')).toBe('bra1');
   });
 
-  test('stealBottomOuter classifies jeans / shorts / skirt correctly', async ({ game: page }) => {
+  test('stealGarment("bottom") classifies jeans / shorts / skirt correctly', async ({ game: page }) => {
     const cases = [
-      { var: 'jeansState1',  expected: 'jeans',  flag: 'isJeansStolen'  },
-      { var: 'shortsState1', expected: 'shorts', flag: 'isShortsStolen' },
-      { var: 'skirtState1',  expected: 'skirt',  flag: 'isSkirtStolen'  },
+      { id: 'jeans1',  expected: 'jeans'  },
+      { id: 'shorts1', expected: 'shorts' },
+      { id: 'skirt1',  expected: 'skirt'  },
     ];
     for (const c of cases) {
       await resetGame(page);
       await callSetup(page, `setup.Mc.setBeauty(10)`);
-      await equip(page, 'bottomOuter', c.var);
+      await equipById(page, 'bottomOuter', c.id);
 
-      const result = await page.evaluate(() =>
-        SugarCube.setup.Wardrobe.stealBottomOuter());
+      const result = await callSetup(page, "setup.Wardrobe.stealGarment('bottom')");
       expect(result).toBe(c.expected);
-      expect(await getVar(page, c.flag)).toBe(true);
-      expect(await getVar(page, c.var)).toBe('not worn');
+      // The aggregate bottom flag and the sub-category flag both flip.
+      expect(await getWardrobeStolen(page, 'bottom')).toBe(true);
+      expect(await getWardrobeStolen(page, c.expected)).toBe(true);
+      expect(await getWardrobeItem(page, c.id)).toBe('not worn');
     }
   });
 
-  test('stealBottomOuter returns null when nothing is worn', async ({ game: page }) => {
-    await setVar(page, 'rememberBottomOuter', null);
-    const result = await page.evaluate(() =>
-      SugarCube.setup.Wardrobe.stealBottomOuter());
+  test('stealGarment("bottom") returns null when nothing is worn', async ({ game: page }) => {
+    // Fresh bundle wears jeans0 (slot-0 bottom); strip it so nothing is worn.
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    const result = await callSetup(page, "setup.Wardrobe.stealGarment('bottom')");
     expect(result).toBeNull();
   });
 
   test('loseAllStolen marks "not bought" only on stolen-flag groups', async ({ game: page }) => {
     await callSetup(page, `setup.Mc.setBeauty(10)`);
-    await equip(page, 'bra', 'braState1');
-    await equip(page, 'panties', 'pantiesState1');
-    await page.evaluate(() => {
-      SugarCube.State.variables.braState = 'worn';
-      SugarCube.State.variables.pantiesState = 'worn';
-    });
+    await equipById(page, 'bra', 'bra1');
+    await equipById(page, 'panties', 'panties1');
 
-    await page.evaluate(() =>
-      SugarCube.setup.Wardrobe.stealWornInGroup('bra', 'braState', 'isBraStolen'));
-    await page.evaluate(() =>
-      SugarCube.setup.Wardrobe.stealWornInGroup('panties', 'pantiesState', 'isPantiesStolen'));
+    await callSetup(page, "setup.Wardrobe.stealGarment('bra')");
+    await callSetup(page, "setup.Wardrobe.stealGarment('panties')");
 
-    await page.evaluate(() => SugarCube.setup.Wardrobe.loseAllStolen());
+    await callSetup(page, 'setup.Wardrobe.loseAllStolen()');
 
-    expect(await getVar(page, 'braState1')).toBe('not bought');
-    expect(await getVar(page, 'pantiesState1')).toBe('not bought');
-    expect(await getVar(page, 'isBraStolen')).toBe(false);
-    expect(await getVar(page, 'isPantiesStolen')).toBe(false);
+    expect(await getWardrobeItem(page, 'bra1')).toBe('not bought');
+    expect(await getWardrobeItem(page, 'panties1')).toBe('not bought');
+    expect(await callSetup(page, 'setup.Wardrobe.isBraStolen()')).toBe(false);
+    expect(await callSetup(page, 'setup.Wardrobe.isPantiesStolen()')).toBe(false);
+    // The lost pieces land on the buyback list.
+    const lost = await getWardrobeLost(page);
+    expect(lost).toEqual(expect.arrayContaining(['bra1', 'panties1']));
   });
 });
 
 test.describe('Wardrobe — query helpers', () => {
-  test('topShirtWorn / braWorn / pantiesWorn / jeansWorn / shortsWorn / skirtWorn', async ({ game: page }) => {
-    await setVar(page, 'tshirtState', 'worn');
-    expect(await callSetup(page, "setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)")).toBe(true);
-    await setVar(page, 'tshirtState', 'not worn');
-    expect(await callSetup(page, "setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)")).toBe(false);
+  test('worn(slot) tracks each slot', async ({ game: page }) => {
+    await setWardrobeSlot(page, 'tshirt', 'worn');
+    expect(await callSetup(page, 'setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)')).toBe(true);
+    await setWardrobeSlot(page, 'tshirt', 'not worn');
+    expect(await callSetup(page, 'setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)')).toBe(false);
 
-    await setVar(page, 'braState', 'worn');
-    expect(await callSetup(page, "setup.Wardrobe.worn(setup.WardrobeSlot.BRA)")).toBe(true);
+    await setWardrobeSlot(page, 'bra', 'worn');
+    expect(await callSetup(page, 'setup.Wardrobe.worn(setup.WardrobeSlot.BRA)')).toBe(true);
 
-    await setVar(page, 'pantiesState', 'worn');
-    expect(await callSetup(page, "setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)")).toBe(true);
+    await setWardrobeSlot(page, 'panties', 'worn');
+    expect(await callSetup(page, 'setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)')).toBe(true);
 
-    await setVar(page, 'jeansState', 'worn');
-    expect(await callSetup(page, "setup.Wardrobe.worn(setup.WardrobeSlot.JEANS)")).toBe(true);
+    await setWardrobeSlot(page, 'jeans', 'worn');
+    expect(await callSetup(page, 'setup.Wardrobe.worn(setup.WardrobeSlot.JEANS)')).toBe(true);
 
-    await setVar(page, 'shortsState', 'worn');
-    expect(await callSetup(page, "setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS)")).toBe(true);
+    // Setting shorts worn clears jeans (one garment per bottomOuter group).
+    await setWardrobeSlot(page, 'shorts', 'worn');
+    expect(await callSetup(page, 'setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS)')).toBe(true);
 
-    await setVar(page, 'skirtState', 'worn');
-    expect(await callSetup(page, "setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT)")).toBe(true);
+    await setWardrobeSlot(page, 'skirt', 'worn');
+    expect(await callSetup(page, 'setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT)')).toBe(true);
   });
 
-  test('takeOffSlotZero flips slot-0 flag to "not worn"', async ({ game: page }) => {
-    await setVar(page, 'tshirtState0', 'worn');
-    await page.evaluate(() => SugarCube.setup.Wardrobe.takeOffSlotZero('tshirtState0'));
-    expect(await getVar(page, 'tshirtState0')).toBe('not worn');
+  test('takeOffSlotZero flips a slot-0 item to "not worn"', async ({ game: page }) => {
+    await setWardrobeItem(page, 'tshirt0', 'worn');
+    await callSetup(page, "setup.Wardrobe.takeOffSlotZero('tshirt0')");
+    expect(await getWardrobeItem(page, 'tshirt0')).toBe('not worn');
   });
 
-  test('refreshAggregateStates rolls slot states up to legacy aggregates', async ({ game: page }) => {
-    await setVar(page, 'tshirtState0', 'not worn');
-    await setVar(page, 'tshirtState1', 'worn');
-    await setVar(page, 'tshirtState2', 'not bought');
-    await setVar(page, 'tshirtState3', 'not bought');
-    await page.evaluate(() => SugarCube.setup.Wardrobe.refreshAggregateStates());
-    expect(await getVar(page, 'tshirtState')).toBe('worn');
+  test('state(slot) rolls item states up: worn beats not-worn beats not-bought', async ({ game: page }) => {
+    await setWardrobeItem(page, 'tshirt0', 'not worn');
+    await setWardrobeItem(page, 'tshirt1', 'worn');
+    await setWardrobeItem(page, 'tshirt2', 'not bought');
+    await setWardrobeItem(page, 'tshirt3', 'not bought');
+    expect(await callSetup(page, "setup.Wardrobe.state('tshirt')")).toBe('worn');
 
-    await setVar(page, 'tshirtState1', 'not worn');
-    await page.evaluate(() => SugarCube.setup.Wardrobe.refreshAggregateStates());
-    expect(await getVar(page, 'tshirtState')).toBe('not worn');
-  });
+    await setWardrobeItem(page, 'tshirt1', 'not worn');
+    expect(await callSetup(page, "setup.Wardrobe.state('tshirt')")).toBe('not worn');
 
-  test('normalizeOuterRememberTokens upgrades legacy values', async ({ game: page }) => {
-    await setVar(page, 'rememberTopOuter', 'tshirt');
-    await setVar(page, 'rememberBottomOuter', 'jeans');
-    await page.evaluate(() => SugarCube.setup.Wardrobe.normalizeOuterRememberTokens());
-    expect(await getVar(page, 'rememberTopOuter')).toBe('tshirt0');
-    expect(await getVar(page, 'rememberBottomOuter')).toBe('jeans0');
+    // Drop every tshirt item to "not bought" so nothing rolls up above it.
+    await setWardrobeItem(page, 'tshirt0', 'not bought');
+    await setWardrobeItem(page, 'tshirt1', 'not bought');
+    expect(await callSetup(page, "setup.Wardrobe.state('tshirt')")).toBe('not bought');
   });
 
   test('currentBottomDescriptor picks the worn outer bottom', async ({ game: page }) => {
-    await setVar(page, 'jeansState', 'not worn');
-    await setVar(page, 'shortsState', 'worn');
-    await setVar(page, 'skirtState', 'not worn');
+    await setWardrobeSlot(page, 'shorts', 'worn'); // worn shorts; clears jeans/skirt
     const desc = await page.evaluate(() => SugarCube.setup.Wardrobe.currentBottomDescriptor());
     expect(desc).not.toBeNull();
     expect(desc.tip).toBe('Wearing shorts');
 
-    await setVar(page, 'shortsState', 'not worn');
+    await setWardrobeSlot(page, 'shorts', 'not worn');
     const empty = await page.evaluate(() => SugarCube.setup.Wardrobe.currentBottomDescriptor());
     expect(empty).toBeNull();
+  });
+});
+
+test.describe('Wardrobe — legacy save fold', () => {
+  test('foldLegacyWardrobe upgrades bare remember tokens to slot-0 ids', async ({ game: page }) => {
+    // Drop the bundle, plant pre-v7 flat keys, and re-run the on-load fold.
+    const out = await page.evaluate(() => {
+      const v = SugarCube.State.variables;
+      delete v.wardrobe;
+      v.rememberTopOuter = 'tshirt';   // very old bare token
+      v.rememberBottomOuter = 'jeans'; // very old bare token
+      SugarCube.setup.applySaveDefaults(v);
+      return {
+        top: v.wardrobe.remembered.tshirt,
+        bottom: v.wardrobe.remembered.bottomOuter,
+        topFlat: v.rememberTopOuter,        // flat key should be gone
+        bottomFlat: v.rememberBottomOuter,
+      };
+    });
+    expect(out.top).toBe('tshirt0');
+    expect(out.bottom).toBe('jeans0');
+    expect(out.topFlat).toBeUndefined();
+    expect(out.bottomFlat).toBeUndefined();
   });
 });

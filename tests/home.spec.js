@@ -1,5 +1,5 @@
 const { test, expect } = require('./fixtures');
-const { setVar, getVar, setHuntMode, getHuntMode, callSetup, goToPassage } = require('./helpers');
+const { setVar, getVar, setHuntMode, getHuntMode, callSetup, goToPassage, setWardrobeSlot } = require('./helpers');
 
 test.describe('Home Controller', () => {
   // --- isDressedForStreet ---
@@ -14,7 +14,7 @@ test.describe('Home Controller', () => {
 
   test('isDressedForStreet false without top', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'tshirtState', 'not worn');
+    await setWardrobeSlot(page, 'tshirt', 'not worn');
 
     // act
     const result = await callSetup(page, 'setup.Wardrobe.isDressedForStreet()');
@@ -25,9 +25,9 @@ test.describe('Home Controller', () => {
 
   test('isDressedForStreet false without any bottom', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'jeansState', 'not worn');
-    await setVar(page, 'skirtState', 'not bought');
-    await setVar(page, 'shortsState', 'not bought');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not bought');
+    await setWardrobeSlot(page, 'shorts', 'not bought');
 
     // act
     const result = await callSetup(page, 'setup.Wardrobe.isDressedForStreet()');
@@ -38,8 +38,8 @@ test.describe('Home Controller', () => {
 
   test('isDressedForStreet true with skirt instead of jeans', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'jeansState', 'not worn');
-    await setVar(page, 'skirtState', 'worn');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'worn');
 
     // act
     const result = await callSetup(page, 'setup.Wardrobe.isDressedForStreet()');
@@ -50,8 +50,8 @@ test.describe('Home Controller', () => {
 
   test('isDressedForStreet true with shorts instead of jeans', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'jeansState', 'not worn');
-    await setVar(page, 'shortsState', 'worn');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'shorts', 'worn');
 
     // act
     const result = await callSetup(page, 'setup.Wardrobe.isDressedForStreet()');
@@ -72,7 +72,7 @@ test.describe('Home Controller', () => {
 
   test('isWearingUnderwear false without bra', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'braState', 'not worn');
+    await setWardrobeSlot(page, 'bra', 'not worn');
 
     // act
     const result = await callSetup(page, 'setup.Wardrobe.isWearingUnderwear()');
@@ -83,7 +83,7 @@ test.describe('Home Controller', () => {
 
   test('isWearingUnderwear false without panties', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'pantiesState', 'not worn');
+    await setWardrobeSlot(page, 'panties', 'not worn');
 
     // act
     const result = await callSetup(page, 'setup.Wardrobe.isWearingUnderwear()');
@@ -104,7 +104,7 @@ test.describe('Home Controller', () => {
 
   test('canLeaveHome false when naked', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'tshirtState', 'not worn');
+    await setWardrobeSlot(page, 'tshirt', 'not worn');
 
     // act
     const result = await callSetup(page, 'setup.Home.canLeaveHome()');
@@ -126,7 +126,7 @@ test.describe('Home Controller', () => {
 
   test('canLeaveHome false without underwear at low corruption', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'braState', 'not worn');
+    await setWardrobeSlot(page, 'bra', 'not worn');
     await setVar(page, 'mc.corruption', 5);
 
     // act
@@ -138,8 +138,8 @@ test.describe('Home Controller', () => {
 
   test('canLeaveHome true without underwear at high corruption (>= 10)', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'braState', 'not worn');
-    await setVar(page, 'pantiesState', 'not worn');
+    await setWardrobeSlot(page, 'bra', 'not worn');
+    await setWardrobeSlot(page, 'panties', 'not worn');
     await setVar(page, 'mc.corruption', 10);
 
     // act
@@ -161,7 +161,7 @@ test.describe('Home Controller', () => {
 
   test('leaveBlockerReason returns "naked" when undressed', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'tshirtState', 'not worn');
+    await setWardrobeSlot(page, 'tshirt', 'not worn');
 
     // act
     const result = await callSetup(page, 'setup.Home.leaveBlockerReason()');
@@ -183,7 +183,7 @@ test.describe('Home Controller', () => {
 
   test('leaveBlockerReason returns "underwear" when no underwear and low corruption', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'braState', 'not worn');
+    await setWardrobeSlot(page, 'bra', 'not worn');
     await setVar(page, 'mc.corruption', 0);
 
     // act

@@ -274,9 +274,9 @@ setup.MonkeyPaw = (function () {
 			widget: 'leave',
 			description: "You are cast out of the house -- but not the way you came in.",
 			/* Scaling (every tier strips clothes via the leave widget,
-			   which <<include>>s the canonical Steal* passages so the
-			   $is*Stolen flags, numbered sub-states, and $remember*
-			   markers all line up with a normal theft):
+			   which calls setup.Wardrobe.stealGarment for each worn piece
+			   so the $wardrobe stolen flags + remember markers all line
+			   up with a normal theft):
 			   t1: dumped outside (HuntOutside) + clothes stolen --
 			       hunt stays active, the MC can walk back in
 			   t2: same as t1 + a guaranteed cursed home item lands on
