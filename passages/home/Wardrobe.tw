@@ -3,11 +3,11 @@
   <div class="itemwrapperWardrobe">
   <div>
       <div id="currentOuterwearTop">
-        <<link "<<image \"outfits/wardrobe/tshirt0.png\">>" "Wardrobe">><<run setup.Wardrobe.takeOffSlotZero("tshirtState0")>>
+        <<link "<<image \"outfits/wardrobe/tshirt0.png\">>" "Wardrobe">><<run setup.Wardrobe.takeOffSlotZero("tshirt0")>>
         <</link>>
       </div>
       <div id="currentOuterwearBottom">
-        <<link "<<image \"outfits/wardrobe/jeans0.png\">>" "Wardrobe">><<run setup.Wardrobe.takeOffSlotZero("jeansState0")>>
+        <<link "<<image \"outfits/wardrobe/jeans0.png\">>" "Wardrobe">><<run setup.Wardrobe.takeOffSlotZero("jeans0")>>
         <</link>>
       </div>
     </div>
@@ -16,11 +16,11 @@
     </div>
   <div>
       <div id="currentUnderwearTop">
-        <<link "<<image \"outfits/wardrobe/slip1.png\">>" "Wardrobe">><<run setup.Wardrobe.takeOffSlotZero("braState0")>>
+        <<link "<<image \"outfits/wardrobe/slip1.png\">>" "Wardrobe">><<run setup.Wardrobe.takeOffSlotZero("bra0")>>
         <</link>>
       </div>
       <div id="currentUnderwearBottom">
-        <<link "<<image \"outfits/wardrobe/short1.png\">>" "Wardrobe">><<run setup.Wardrobe.takeOffSlotZero("pantiesState0")>>
+        <<link "<<image \"outfits/wardrobe/short1.png\">>" "Wardrobe">><<run setup.Wardrobe.takeOffSlotZero("panties0")>>
         <</link>>
       </div>
       <div id="currentUnderwearStockings">
@@ -59,8 +59,6 @@
 <div id="availableAccessories"></div><br>
 <div id="availablePiercing"></div><br>
 
-<<run setup.Wardrobe.normalizeOuterRememberTokens()>>
-<<run setup.Wardrobe.refreshAggregateStates()>>
 <<set _hh to setup.Wardrobe.harassmentLevel()>>
 <div id="huntHarassmentReadout" class="huntHarassmentReadout">
 Estimated hunt harassment: <<= '<span class="huntHarassment-' + _hh + '">' + _hh + '</span>'>>

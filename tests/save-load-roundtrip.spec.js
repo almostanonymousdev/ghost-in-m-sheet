@@ -647,8 +647,15 @@ test.describe('Save/load round-trip', () => {
         ectoplasmWeakenCount: 5,
         ectoplasmPrequalified: true,
         relationshipBlake: 4,
-        lostClothing: ['jeansState'],
-        rememberTopOuter: 'tshirt0', rememberBottomOuter: 'jeans0',
+        // Wardrobe progression (purchases, worn/under memory, lost tier
+        // items) rides forward in the single $wardrobe bundle now.
+        wardrobe: {
+          items: { tshirt0: 'worn', jeans0: 'not worn' },
+          remembered: { tshirt: 'tshirt0', bottomOuter: 'jeans0' },
+          stolen: { shirt: false, bra: false, panties: false, bottom: false,
+                    jeans: false, shorts: false, skirt: false },
+          lost: ['jeans0'],
+        },
         // Companion stat row + marker:
         companion: { name: 'Brook' },
         brook: { sanity: 80, lust: 20, chanceToAttack: 5 },
@@ -702,8 +709,10 @@ test.describe('Save/load round-trip', () => {
     expect(after.ectoplasmWeakenCount).toBe(5);
     expect(after.ectoplasmPrequalified).toBe(true);
     expect(after.relationshipBlake).toBe(4);
-    expect(after.lostClothing).toEqual(['jeansState']);
-    expect(after.rememberTopOuter).toBe('tshirt0');
+    expect(after.wardrobe.lost).toEqual(['jeans0']);
+    expect(after.wardrobe.remembered.tshirt).toBe('tshirt0');
+    expect(after.wardrobe.remembered.bottomOuter).toBe('jeans0');
+    expect(after.wardrobe.items.tshirt0).toBe('worn');
     expect(after.companion).toEqual({ name: 'Brook' });
     expect(after.brook.sanity).toBe(80);
 

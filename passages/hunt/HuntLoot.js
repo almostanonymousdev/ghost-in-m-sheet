@@ -126,20 +126,11 @@ setup.HuntLoot = (function () {
 	   in furniture. Single entry point for hunt-side steal paths
 	   (StealPanties / StealBra / StealBottomOuter leaf passages,
 	   the no-media shirt branch in StealClothes / FreezeHunt). No-op
-	   if the piece isn't currently worn -- stealWornInGroup /
-	   stealBottomOuter return false/null in that case, in which case
-	   we skip the stash so a missed strip doesn't drop a phantom pin. */
+	   if the piece isn't currently worn -- stealGarment returns null in
+	   that case, in which case we skip the stash so a missed strip
+	   doesn't drop a phantom pin. */
 	function stealClothes(piece) {
-		var ok = false;
-		if (piece === 'panties') {
-			ok = setup.Wardrobe.stealWornInGroup('panties', 'pantiesState', 'isPantiesStolen');
-		} else if (piece === 'bra') {
-			ok = setup.Wardrobe.stealWornInGroup('bra', 'braState', 'isBraStolen');
-		} else if (piece === 'shirt') {
-			ok = setup.Wardrobe.stealWornInGroup('tshirt', 'tshirtState', 'isShirtStolen');
-		} else if (piece === 'bottom') {
-			ok = setup.Wardrobe.stealBottomOuter() != null;
-		}
+		var ok = setup.Wardrobe.stealGarment(piece) != null;
 		if (!ok) return null;
 		return stashStolenClothes(piece);
 	}

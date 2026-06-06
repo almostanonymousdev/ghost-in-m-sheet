@@ -648,7 +648,7 @@ test.describe('setup.Flashbacks', () => {
 			// would <<goto>> Livingroom instead of rendering nude prose.
 			const groups = SugarCube.setup.WARDROBE_GROUPS;
 			const tshirtGrp = groups.find(g => g.name === 'tshirt');
-			SugarCube.setup.Wardrobe.equip(tshirtGrp, tshirtGrp.items.find(it => it.key === 'tshirt1'));
+			SugarCube.setup.Wardrobe.equip(tshirtGrp, tshirtGrp.items.find(it => it.id === 'tshirt1'));
 			const F = SugarCube.setup.Flashbacks;
 			F.markSeen('nudity_walk_solo');
 			F.enterReplay('nudity_walk_solo');
@@ -670,9 +670,9 @@ test.describe('setup.Flashbacks', () => {
 			// Pre-replay state: dressed, exhibitionism = 0.
 			const groups = SugarCube.setup.WARDROBE_GROUPS;
 			const tshirtGrp = groups.find(g => g.name === 'tshirt');
-			SugarCube.setup.Wardrobe.equip(tshirtGrp, tshirtGrp.items.find(it => it.key === 'tshirt1'));
+			SugarCube.setup.Wardrobe.equip(tshirtGrp, tshirtGrp.items.find(it => it.id === 'tshirt1'));
 			const jeansGrp = groups.find(g => g.name === 'bottomOuter');
-			SugarCube.setup.Wardrobe.equip(jeansGrp, jeansGrp.items.find(it => it.key === 'jeans1'));
+			SugarCube.setup.Wardrobe.equip(jeansGrp, jeansGrp.items.find(it => it.id === 'jeans1'));
 			SugarCube.setup.Mc.setExhibitionism(0);
 			const F = SugarCube.setup.Flashbacks;
 			F.markSeen('nudity_walk_solo');

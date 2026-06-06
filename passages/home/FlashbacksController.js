@@ -42,25 +42,11 @@ setup.Flashbacks = (function () {
 	   would throw on load, taking down every script that loads after
 	   it (Hunt, Achievements). See the catalogue's nudity_walk_* /
 	   hunt_caught_* entries. */
+	/* Every wardrobe fact now lives in the single $wardrobe bundle
+	   (items / remembered / stolen / lost). Deep so an in-replay
+	   strip / steal / dropWornOuter mutation is reversed on exit. */
 	var WARDROBE_PATHS = Object.freeze([
-		'tshirtState', 'braState', 'pantiesState',
-		'jeansState', 'shortsState', 'skirtState',
-		'tshirtState0', 'tshirtState1', 'tshirtState2', 'tshirtState3',
-		'braState0', 'braState1', 'braState2', 'braState3',
-		'pantiesState0', 'pantiesState1', 'pantiesState2', 'pantiesState3',
-		'jeansState0', 'jeansState1', 'jeansState2', 'jeansState3',
-		'shortsState1', 'shortsState2', 'shortsState3',
-		'skirtState1', 'skirtState2', 'skirtState3',
-		'stockingsState1', 'stockingsState2', 'stockingsState3',
-		'footState1', 'footState2', 'footState3',
-		'neckChokerState1',
-		'rememberTopOuter', 'rememberBottomOuter',
-		'rememberTopUnder', 'rememberBottomUnder',
-		'rememberBottomStockings',
-		'isPantiesStolen', 'isBottomStolen',
-		'isShirtStolen', 'isBraStolen',
-		'isJeansStolen', 'isShortsStolen', 'isSkirtStolen',
-		{ path: 'lostClothing', deep: true }
+		{ path: 'wardrobe', deep: true }
 	]);
 
 	/* Companion state is split across a marker ($companion = {name})

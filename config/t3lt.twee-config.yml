@@ -468,6 +468,14 @@ sugarcube-2:
       name: shopCardCorruption
     shopCard:
       name: shopCard
+    clothingCard:
+      name: clothingCard
+      description: "Mall clothing-shop card for a $wardrobe catalogue item.
+        Pulls image / price / beauty bonus from setup.Wardrobe.itemById(id),
+        renders the buy card while the item is unpurchased, and buys via
+        setup.Wardrobe.purchase(id). Args: itemId (string), returnPassage
+        (string), bonusOverride (string, optional — defaults to
+        \"+<beauty> beauty\")."
     consumableCard:
       name: consumableCard
     shopCardConditional:

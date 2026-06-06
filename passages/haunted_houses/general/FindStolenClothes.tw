@@ -12,11 +12,11 @@
 	<<linkreplace "@@.mc-speechLink; Nah... I should get dressed@@">>
 		<br>
 		@@.mc-action; You slip your panties back on.@@<br><br>
-		<<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>>
+		<<run setup.Wardrobe.restoreGarment("panties")>>
 	<</linkreplace>>
 <<else>>
 	@@.mc-action; You slip your panties back on.@@<br><br>
-	<<run setup.Wardrobe.restoreStolenInGroup("panties", "isPantiesStolen")>>
+	<<run setup.Wardrobe.restoreGarment("panties")>>
 <</if>>
 <<run setup.HuntController.takeLoot("clothesStolenPanties")>>
 
@@ -29,11 +29,11 @@
 	<<linkreplace "@@.mc-speechLink; Nah... I should put it back on@@">>
 		<br>
 		@@.mc-action; You fasten the bra back on.@@<br><br>
-		<<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>>
+		<<run setup.Wardrobe.restoreGarment("bra")>>
 	<</linkreplace>>
 <<else>>
 	@@.mc-action; You fasten the bra back on.@@<br><br>
-	<<run setup.Wardrobe.restoreStolenInGroup("bra", "isBraStolen")>>
+	<<run setup.Wardrobe.restoreGarment("bra")>>
 <</if>>
 <<run setup.HuntController.takeLoot("clothesStolenBra")>>
 
@@ -46,11 +46,11 @@
 	<<linkreplace "@@.mc-speechLink; Nah... I should put it back on@@">>
 		<br>
 		@@.mc-action; You pull the top back on.@@<br><br>
-		<<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>>
+		<<run setup.Wardrobe.restoreGarment("shirt")>>
 	<</linkreplace>>
 <<else>>
 	@@.mc-action; You pull the top back on.@@<br><br>
-	<<run setup.Wardrobe.restoreStolenInGroup("tshirt", "isShirtStolen")>>
+	<<run setup.Wardrobe.restoreGarment("shirt")>>
 <</if>>
 <<run setup.HuntController.takeLoot("clothesStolenShirt")>>
 
@@ -67,11 +67,7 @@
 		<<if _vid>>
 			<<video _vid "displayCentredImgs">>
 		<</if>>
-		<<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>>
-		<<run State.variables.isBottomStolen = false>>
-		<<run State.variables.isJeansStolen = false>>
-		<<run State.variables.isShortsStolen = false>>
-		<<run State.variables.isSkirtStolen = false>>
+		<<run setup.Wardrobe.restoreGarment("bottom")>>
 	<</linkreplace>>
 <<else>>
 	@@.mc-action; You step back into your bottoms.@@<br>
@@ -79,10 +75,6 @@
 	<<if _vid>>
 		<<video _vid "displayCentredImgs">>
 	<</if>>
-	<<run setup.Wardrobe.restoreStolenInGroup("bottomOuter")>>
-	<<run State.variables.isBottomStolen = false>>
-	<<run State.variables.isJeansStolen = false>>
-	<<run State.variables.isShortsStolen = false>>
-	<<run State.variables.isSkirtStolen = false>>
+	<<run setup.Wardrobe.restoreGarment("bottom")>>
 <</if>>
 <<run setup.HuntController.takeLoot("clothesStolenBottom")>>

@@ -1,5 +1,5 @@
 const { test, expect } = require('../fixtures');
-const { setVar, getVar, callSetup, goToPassage } = require('../helpers');
+const { setVar, getVar, callSetup, goToPassage, setWardrobeRemember } = require('../helpers');
 const { expectCleanPassage } = require('./e2e-helpers');
 
 test.describe('Gym — hours and training gates', () => {
@@ -62,16 +62,16 @@ test.describe('Gym — hours and training gates', () => {
   test('canTriggerTrainer1Event requires tip + no cooldown + sexy lingerie', async ({ game: page }) => {
     await setVar(page, 'trainer1TipReceived', true);
     await setVar(page, 'trainer1Sex', 0);
-    await setVar(page, 'rememberBottomStockings', 'stockings2');
-    await setVar(page, 'rememberTopUnder', 'bra2');
-    await setVar(page, 'rememberBottomUnder', 'panties2');
+    await setWardrobeRemember(page, 'stockings', 'stockings2');
+    await setWardrobeRemember(page, 'bra', 'bra2');
+    await setWardrobeRemember(page, 'panties', 'panties2');
     expect(await callSetup(page, 'setup.Gym.canTriggerTrainer1Event()')).toBe(true);
 
     await setVar(page, 'trainer1Sex', 1);
     expect(await callSetup(page, 'setup.Gym.canTriggerTrainer1Event()')).toBe(false);
 
     await setVar(page, 'trainer1Sex', 0);
-    await setVar(page, 'rememberTopUnder', 'bra1');
+    await setWardrobeRemember(page, 'bra', 'bra1');
     expect(await callSetup(page, 'setup.Gym.canTriggerTrainer1Event()')).toBe(false);
   });
 

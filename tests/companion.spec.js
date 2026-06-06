@@ -1,5 +1,5 @@
 const { test, expect } = require('./fixtures');
-const { setVar, getVar, callSetup } = require('./helpers');
+const { setVar, getVar, callSetup, setWardrobeSlot } = require('./helpers');
 
 // Stamp the $companion marker and override the named companion's
 // sanity/lust on its backing stat row -- since $companion stopped
@@ -173,9 +173,9 @@ test.describe('Companion Controller', () => {
 
   test('canWalkHomeWithCompanion false when no bottoms worn', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'jeansState', 'not worn');
-    await setVar(page, 'skirtState', 'not bought');
-    await setVar(page, 'shortsState', 'not bought');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'not bought');
+    await setWardrobeSlot(page, 'shorts', 'not bought');
 
     // act
     const result = await callSetup(page, 'setup.Companion.canWalkHomeWithCompanion()');
@@ -186,8 +186,8 @@ test.describe('Companion Controller', () => {
 
   test('canWalkHomeWithCompanion true with skirt', async ({ game: page }) => {
     // arrange
-    await setVar(page, 'jeansState', 'not worn');
-    await setVar(page, 'skirtState', 'worn');
+    await setWardrobeSlot(page, 'jeans', 'not worn');
+    await setWardrobeSlot(page, 'skirt', 'worn');
 
     // act
     const result = await callSetup(page, 'setup.Companion.canWalkHomeWithCompanion()');

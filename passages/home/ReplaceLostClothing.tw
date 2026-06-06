@@ -7,16 +7,16 @@
 	@@.mc-thoughts; The ghost made off with these. I can pop down to the mall later, or just order replacements now.@@<br>
 	<br>
 	<div class="flexwrapper backgroundForText">
-	<<for _varName range setup.Wardrobe.lostClothing()>>
-		<<set _item to setup.Wardrobe.itemByVar(_varName)>>
+	<<for _id range setup.Wardrobe.lostClothing()>>
+		<<set _item to setup.Wardrobe.itemById(_id)>>
 		<<if _item and _item.price>>
 			<div class="housecard">
 			<<image "outfits/wardrobe/" + _item.img "iconPx">><br>
 			<span class="priceAmount"><<= _item.price>>$</span><br>
 			<<if setup.Mc.money() gte _item.price>>
-				<<capture _varName>>
+				<<capture _id>>
 					@@.buyItemLink;<<link "Replace" "ReplaceLostClothing">>
-						<<run setup.Wardrobe.replaceLostClothing(_varName)>>
+						<<run setup.Wardrobe.replaceLostClothing(_id)>>
 					<</link>>@@<br>
 				<</capture>>
 			<<else>>

@@ -76,21 +76,21 @@
 <<widget "leave">>
 	<<set _out to setup.MonkeyPaw.activate("leave")>>
 	/* Tier 3 abandons the run (goto = streetExitPassage), tiers 1
-	   and 2 just dump the MC in the yard (goto = HuntOutside) with
-	   the run still active so she can re-enter through the front
-	   door. Either way the clothes-theft side of the wish has
-	   already landed, so bypass the Steal* leaf passages (which
-	   would also stash a floor-plan pin and re-render the room) and
-	   just flip the wardrobe flags directly -- the existing modesty
-	   gate on HuntOutside / FindStolenClothes / NudityEvent handles
-	   the rest. */
+		and 2 just dump the MC in the yard (goto = HuntOutside) with
+		the run still active so she can re-enter through the front
+		door. Either way the clothes-theft side of the wish has
+		already landed, so bypass the Steal* leaf passages (which
+		would also stash a floor-plan pin and re-render the room) and
+		just flip the wardrobe flags directly -- the existing modesty
+		gate on HuntOutside / FindStolenClothes / NudityEvent handles
+		the rest. */
 	<<if _out.clothesStolen>>
-		<<if setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)>><<run setup.Wardrobe.stealWornInGroup("tshirt", "tshirtState", "isShirtStolen")>><</if>>
-		<<if setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>><<run setup.Wardrobe.stealWornInGroup("bra", "braState", "isBraStolen")>><</if>>
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.TSHIRT)>><<run setup.Wardrobe.stealGarment("shirt")>><</if>>
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.BRA)>><<run setup.Wardrobe.stealGarment("bra")>><</if>>
 		<<if setup.Wardrobe.worn(setup.WardrobeSlot.JEANS) or setup.Wardrobe.worn(setup.WardrobeSlot.SHORTS) or setup.Wardrobe.worn(setup.WardrobeSlot.SKIRT)>>
-			<<run setup.Wardrobe.stealBottomOuter()>>
+			<<run setup.Wardrobe.stealGarment("bottom")>>
 		<</if>>
-		<<if setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)>><<run setup.Wardrobe.stealWornInGroup("panties", "pantiesState", "isPantiesStolen")>><</if>>
+		<<if setup.Wardrobe.worn(setup.WardrobeSlot.PANTIES)>><<run setup.Wardrobe.stealGarment("panties")>><</if>>
 	<</if>>
 	<<if _out.goto>>
 		<<goto _out.goto>>

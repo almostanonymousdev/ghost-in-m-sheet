@@ -53,7 +53,15 @@
 	//  	     $chanceToSuccessAlone<Street><Name>, $decreaseSanity, ...)
 	//      	 no longer carry per-companion solo-hunt state forward;
 	//     	 	 fresh per-companion stat rows are seeded from defaults.
-	var SAVE_VERSION = 6;
+	//   v7: wardrobe collapsed to one bundle. The flat per-tier
+	//       $<item>State<N>, the aggregate $<slot>State flags, the
+	//       $remember* tokens, the $isXxxStolen booleans, and
+	//       $lostClothing all fold into the single $wardrobe object
+	//       owned by setup.Wardrobe (see foldLegacyWardrobe). The
+	//       canonical item id is the old rememberVar token
+	//       ("tshirt0", "bra1", ...); aggregate worn-state is now
+	//       computed, not stored.
+	var SAVE_VERSION = 7;
 	setup.SAVE_VERSION = SAVE_VERSION;
 
 	/*
@@ -141,9 +149,11 @@
 		// Per-day seed; regenerated on every 24h rollover.
 		dailySeed:     function () { return Math.floor(Math.random() * 0x100000000); },
 
-		// Buyback for clothes lost during a hunt. Older saves
-		// have no array; default to empty.
-		lostClothing:  function () { return []; },
+		// (Wardrobe state -- including the lost-clothing buyback list --
+		// lives in the $wardrobe bundle; it's seeded by initState and
+		// folded from legacy flat keys by foldLegacyWardrobe, so it is
+		// deliberately absent here. A DEFAULTS entry would run before the
+		// fold and shadow the player's real wardrobe with a fresh one.)
 		tornPagesFound: function () { return []; },
 
 		// Witch's ectoplasm-unlock quest. Gates the rogue/random
@@ -224,6 +234,98 @@
 		beautyModifier:    0,
 		possessionResidue: 0
 	};
+
+	// v6 -> v7: collapse the flat wardrobe save vars (per-tier
+	// $<item>State<N>, aggregate $<slot>State, the $remember* tokens,
+	// the $isXxxStolen booleans, and $lostClothing) into the single
+	// $wardrobe bundle owned by setup.Wardrobe. The canonical item id
+	// is the old rememberVar token ("tshirt0", "bra1", ...); the legacy
+	// state key splices "State" before its trailing index
+	// ("tshirt0" -> $tshirtState0). Idempotent: a v7+ save already
+	// carries a $wardrobe with .items and short-circuits. Pre-v7 saves
+	// also pass through resetToFallback (version bump), which preserves
+	// 'wardrobe', so this folded bundle is what survives the reset.
+	function foldLegacyWardrobe (vars) {
+		var CS = setup.ClothingState;
+		if (vars.wardrobe && typeof vars.wardrobe === 'object' && vars.wardrobe.items) {
+			return;
+		}
+		var bundle = setup.freshWardrobeBundle();
+
+		function legacyVarFor(id) { return id.replace(/(\d+)$/, 'State$1'); }
+
+		// 1. Per-item ownership / worn state.
+		setup.WARDROBE_GROUPS.forEach(function (grp) {
+			grp.items.forEach(function (item) {
+				var legacy = vars[legacyVarFor(item.id)];
+				if (legacy === CS.WORN || legacy === CS.NOT_WORN || legacy === CS.NOT_BOUGHT) {
+					bundle.items[item.id] = legacy;
+				}
+			});
+		});
+
+		// 2. Remember tokens. Legacy rememberVar -> group slot. Very old
+		//    saves stored bare "tshirt"/"jeans"; upgrade to slot-0 ids.
+		Object.keys(setup.WARDROBE_REMEMBER_LEGACY).forEach(function (legacyVar) {
+			var groupName = setup.WARDROBE_REMEMBER_LEGACY[legacyVar];
+			var token = vars[legacyVar];
+			if (typeof token === 'string' && token) {
+				if (token === 'tshirt') { token = 'tshirt0'; }
+				if (token === 'jeans')  { token = 'jeans0'; }
+				bundle.remembered[groupName] = token;
+			}
+		});
+
+		// 3. Stolen flags (already boolean by normalizeBooleanFlags).
+		bundle.stolen.shirt   = vars.isShirtStolen   === true;
+		bundle.stolen.bra     = vars.isBraStolen     === true;
+		bundle.stolen.panties = vars.isPantiesStolen === true;
+		bundle.stolen.bottom  = vars.isBottomStolen  === true;
+		bundle.stolen.jeans   = vars.isJeansStolen   === true;
+		bundle.stolen.shorts  = vars.isShortsStolen  === true;
+		bundle.stolen.skirt   = vars.isSkirtStolen   === true;
+
+		// 4. Lost clothing. Old entries were $<item>State<N> var names;
+		//    convert each back to its canonical id.
+		if (Array.isArray(vars.lostClothing)) {
+			vars.lostClothing.forEach(function (name) {
+				var id = (typeof name === 'string') ? name.replace(/State(\d+)$/, '$1') : name;
+				if (bundle.lost.indexOf(id) === -1) { bundle.lost.push(id); }
+			});
+		}
+		// 4b. Back-fill: a tier item left NOT_BOUGHT whose group still
+		//     remembers "no<that-id>" can only have come from a hunt
+		//     loss (replicates the pre-v7 $lostClothing backfill).
+		setup.WARDROBE_GROUPS.forEach(function (grp) {
+			var token = bundle.remembered[grp.name];
+			if (typeof token !== 'string' || token.indexOf('no') !== 0) { return; }
+			var item = grp.item(token.slice(2));
+			if (item && item.slot !== 0 && bundle.items[item.id] === CS.NOT_BOUGHT
+				&& bundle.lost.indexOf(item.id) === -1) {
+				bundle.lost.push(item.id);
+			}
+		});
+
+		vars.wardrobe = bundle;
+
+		// Drop the now-folded flat keys so they don't linger in the save.
+		var dead = [
+			'tshirtState', 'braState', 'pantiesState',
+			'jeansState', 'shortsState', 'skirtState',
+			'footState1', 'footState2', 'footState3',
+			'shortsState0', 'skirtState0', 'stockingsState0',
+			'rememberTopOuter', 'rememberBottomOuter',
+			'rememberTopUnder', 'rememberBottomUnder', 'rememberBottomStockings',
+			'isPantiesStolen', 'isBottomStolen', 'isShirtStolen', 'isBraStolen',
+			'isJeansStolen', 'isShortsStolen', 'isSkirtStolen',
+			'isTshirtStolen', 'isStockingsStolen',
+			'lostClothing'
+		];
+		setup.WARDROBE_GROUPS.forEach(function (grp) {
+			grp.items.forEach(function (item) { dead.push(legacyVarFor(item.id)); });
+		});
+		dead.forEach(function (k) { delete vars[k]; });
+	}
 
 	function applyDefaults (vars) {
 		if (!vars || typeof vars !== 'object') {
@@ -643,30 +745,11 @@
 			});
 		});
 
-		// Back-fill $lostClothing for saves created before the lost-
-		// clothing tracking shipped. loseAllStolen used to just mark
-		// the stolen tier item NOT_BOUGHT and clear the rememberVar to
-		// "no<key>"; a tier-1..3 var sitting in NOT_BOUGHT while its
-		// group's rememberVar still points at "no<that-key>" can only
-		// have come from a hunt loss (a never-bought item never has
-		// the rememberVar pointed at it). Idempotent — re-runs on
-		// every load skip entries already in the list.
-		if (Array.isArray(vars.lostClothing) && setup.WARDROBE_GROUPS) {
-			setup.WARDROBE_GROUPS.forEach(function (grp) {
-				if (!grp.rememberVar) { return; }
-				var key = vars[grp.rememberVar];
-				if (typeof key !== 'string' || key.indexOf('no') !== 0) { return; }
-				var originalKey = key.slice(2);
-				grp.items.forEach(function (item) {
-					if (item.key !== originalKey) { return; }
-					if (item.slot === 0) { return; }
-					if (vars[item.var] !== setup.ClothingState.NOT_BOUGHT) { return; }
-					if (vars.lostClothing.indexOf(item.var) === -1) {
-						vars.lostClothing.push(item.var);
-					}
-				});
-			});
-		}
+		// v7: collapse every flat wardrobe save key into the single
+		// $wardrobe bundle (see foldLegacyWardrobe). Runs after
+		// normalizeBooleanFlags so the $isXxxStolen flags are already
+		// boolean by the time the fold reads them.
+		foldLegacyWardrobe(vars);
 	}
 
 	// Expose for use from Twine (PassageReady belt-and-braces call).
@@ -709,22 +792,12 @@
 		'isPhoneBought', 'isCameraBought', 'dildoPurchased',
 		'sportswear',
 
-		// --- Wardrobe (ownership + outer/under memory) ----------
-		'tshirtState', 'braState', 'pantiesState', 'jeansState',
-		'shortsState', 'skirtState',
-		'stockingsState1', 'stockingsState2', 'stockingsState3',
-		'footState1', 'footState2', 'footState3',
-		'tshirtState0', 'tshirtState1', 'tshirtState2', 'tshirtState3',
-		'braState0', 'braState1', 'braState2', 'braState3',
-		'pantiesState0', 'pantiesState1', 'pantiesState2', 'pantiesState3',
-		'jeansState0', 'jeansState1', 'jeansState2', 'jeansState3',
-		'shortsState0', 'shortsState1', 'shortsState2', 'shortsState3',
-		'skirtState0', 'skirtState1', 'skirtState2', 'skirtState3',
-		'neckChokerState1', 'neckChokerState2', 'neckChokerState3',
-		'rememberTopOuter', 'rememberBottomOuter',
-		'rememberTopUnder', 'rememberBottomUnder',
-		'rememberBottomStockings',
-		'lostClothing',
+		// --- Wardrobe (ownership + outer/under memory + lost list) --
+		// Single bundle now: items / remembered / stolen / lost. Folded
+		// from the old flat keys on load by foldLegacyWardrobe, so by the
+		// time resetToFallback snapshots PRESERVE_KEYS this carries the
+		// player's purchases + worn state forward.
+		'wardrobe',
 
 		// --- Quest / story progression --------------------------
 		'firstVisitWitchShop', 'firstVisitDeliveryHub',
