@@ -1,7 +1,7 @@
 /**
  * setup.Ledger — false-positive coverage at the passage / passage-flow level.
  *
- * The unit spec ([tests/ledger.spec.js](tests/ledger.spec.js)) covers each
+ * The unit spec ([../ledger.spec.js](../ledger.spec.js)) covers each
  * mutator on its own. This spec exercises the real gameplay flows that
  * touch tracked fields end-to-end: sleeping, the time-cross-midnight
  * widget, the bedroom restore, a hunt payout, and a save/load cycle.

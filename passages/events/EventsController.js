@@ -86,7 +86,7 @@ setup.Events = (function () {
 	}
 
 	// Cthulion ability video pools, keyed by tier (1-4). Tiers 1-3
-	// are sanity-banded (used by SaveEventPassage); tier 4 is used by
+	// are sanity-banded (used by the save-event scene); tier 4 is used by
 	// the companion-help passages (BlakeHelp, BrookHelp). Tier 0 is
 	// the "no Cthulion this sanity band" sentinel.
 	var CTHULION_RANGES = { 1: 7, 2: 5, 3: 8, 4: 10 };
@@ -410,7 +410,7 @@ setup.Events = (function () {
 		*   random roll, shared with Banshee/Cthulion checks).
 		*/
 		/*
-		* SaveEventPassage sanity-stage video lookup. The stage→body-part
+		* Save-event sanity-stage video lookup. The stage→body-part
 		* mapping reuses eventVideos so the clothing-aware resolvers
 		* (bottomClothingVideos / topClothingVideos) stay the single
 		* source of truth.
@@ -502,10 +502,10 @@ setup.Events = (function () {
 			return true;
 		},
 
-		/* SaveEventPassage entry: runs the sanity-stage / Banshee /
+		/* rollSaveEvent: runs the sanity-stage / Banshee /
 		   Cthulion dispatch, picks a video, writes it to $videoEvent,
 		   and returns true if a video was selected (caller <<goto>>s
-		   EventMC). Encapsulates the entire flow that SaveEventPassage
+		   EventMC). Encapsulates the entire flow the old save-event passage
 		   used to inline. */
 		rollSaveEvent: function () {
 			this.setDecreasingSanity(

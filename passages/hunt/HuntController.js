@@ -195,7 +195,7 @@ setup.HuntController = (function () {
 	function isAnyMode() { return huntMode() !== HuntMode.NONE; }
 
 	/* Flip $huntMode to ACTIVE and clear stale per-hunt ability flags
-	   (highpriestess / banshee / cthulion live on setup.Ghosts as
+	   (highpriestess / bansheeAbility / cthulionAbility live on setup.Ghosts as
 	   per-hunt singletons). Called from startHunt once $run is stamped. */
 	function activateHunt() {
 		setHuntMode(HuntMode.ACTIVE);
@@ -561,7 +561,7 @@ setup.HuntController = (function () {
 		   fire the 'It Moved' achievement before the ghost has actually
 		   moved). The gate is consumed by HuntDrift.shuffleGhostRoom(). */
 		setup.HuntDrift.seedNextDriftClock();
-		/* Same shared-state reset classic did at GhostRandomize:
+		/* Same shared-state reset the classic flow did:
 		   tarot deck back to HIDDEN, monkey paw back to 3 wishes /
 		   not-yet-found / no banned houses, knowledge-evidence
 		   overlay cleared. The cursed-item carry pickup reuses

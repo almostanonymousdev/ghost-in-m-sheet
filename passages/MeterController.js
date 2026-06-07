@@ -407,7 +407,7 @@
             }
 
             if (sizeTag) {
-                // process the sizin tag
+                // process the sizing tag
                 if (!sizeTag.args.length) {
                     return this.error('No arguments passed to the `<<sizing>>` tag.');
                 }
@@ -498,7 +498,7 @@
         }
     });
 
-    // <<updatebar '$variable' value>>
+    // <<updatemeter '$variable' value>>
     Macro.add('updatemeter', {
         handler : function () {
 

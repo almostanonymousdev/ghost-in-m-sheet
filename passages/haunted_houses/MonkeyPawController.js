@@ -414,9 +414,10 @@ setup.MonkeyPaw = (function () {
 		},
 
 		// --- Hunt-scoped lifecycle --------------------------------
-		/* Reset hunt-scoped paw state. Called from GhostRandomize at
-		   the start of every new contract. Does NOT touch `learned`
-		   or guide flags -- those persist across hunts. */
+		/* Reset hunt-scoped paw state. Called from
+		   HuntController.resetCursedItemState() at the start and end of
+		   every hunt. Does NOT touch `learned` or guide flags -- those
+		   persist across hunts. */
 		resetHunt: function () {
 			var s = sv();
 			s.MonkeyPawStage = setup.MonkeyPawStage.HIDDEN;

@@ -22,7 +22,7 @@ The game includes a body modification system that allows you to customize your c
 * **Clothing and wardrobe** - Clothing choices interact with the exhibitionism and body modification systems. Clothing state changes are now driven entirely by `setup.Wardrobe` helpers in the controller (no standalone state-change passage).
   * [Wardrobe.tw](../passages/home/Wardrobe.tw) - Wardrobe and clothing selection
   * [WardrobeSlots.tw](../passages/home/WardrobeSlots.tw) - Wardrobe slot layout and outfit slots
-  * [WardrobeController.js](../passages/home/WardrobeController.js) - Wardrobe state and outfit switching logic (hosts `setup.Wardrobe.stealWornInGroup` / `restoreStolenInGroup` used by hunt events)
+  * [WardrobeController.js](../passages/home/WardrobeController.js) - Wardrobe state and outfit switching logic (hosts `setup.Wardrobe.stealGarment` / `restoreGarment` used by hunt events)
 
 * **Exhibitionism in hunts** - Nudity events during ghost hunts are tied to the exhibitionism level unlocked through body mod progression.
   * [NudityEvent.tw](../passages/haunted_houses/general/NudityEvent.tw) - Nudity event during hunts

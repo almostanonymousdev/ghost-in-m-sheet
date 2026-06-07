@@ -1092,10 +1092,10 @@ setup.searchableRooms.forEach(function (room) {
         }
     });
 
-    /* Lazy-init the $currentsearchHunt counter bag. The classic
-     * per-room bags are seeded from GhostRandomize; hunts skip
-     * that passage entirely, so the toolbar widget invokes this once
-     * on render. Idempotent. */
+    /* Lazy-init the $currentsearchHunt counter bag. The non-hunt
+     * search flow seeds a per-room bag for each room; hunts skip that
+     * path entirely, so the toolbar widget invokes this once on render
+     * to build the shared hunt bag. Idempotent. */
     setup.ensureHuntSearchBag = function () {
         var V = State.variables;
         if (!V.currentsearchHunt) {

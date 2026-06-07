@@ -16,7 +16,7 @@
 			<<goto "ParkMugging">>
 		<<else>>
 			<<set _check to random(30,110)>>
-			<<if setup.Park.isBeautyBelow(_check)>>
+			<<if setup.Park.isBeautyAtLeast(_check)>>
 				<<video "characters/mc/parkevent2.mp4">>
 				<<thought>>She bursts out from the bushes, her eyes burning with desire, and begins to chase you. Frightened, you try to [[run away from her|ParkEvent1]]<</thought>>
 			<<else>>

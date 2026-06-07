@@ -1,3 +1,8 @@
+/* Ghost catalogue, queries, and per-ghost effects. Owns GHOST_CONFIG
+   (the catalogue of ghost types), the Ghost prototype, the setup.Ghosts
+   API, and the per-ghost huntHooks / huntFilters wired onto the hunt bus
+   at :storyready. See passages/ghosts/ActiveGhostController.js for the
+   "what is the current hunt ghost doing" projections layered on top. */
 (function () {
     'use strict';
 

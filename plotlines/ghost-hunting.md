@@ -37,10 +37,10 @@ The core gameplay revolves around investigating haunted locations to identify an
   * [FrontDoorLocked.tw](../passages/haunted_houses/general/FrontDoorLocked.tw) - Locked-door / trapped-inside handling
   * [PrayHunt.tw](../passages/haunted_houses/general/PrayHunt.tw) - Praying during a hunt
 
-* **Clothing and nudity events** - Ghosts can steal clothing during hunts, creating nudity events that affect the exhibitionism system. Per-item steal/restore is driven by `setup.Wardrobe.stealWornInGroup` / `restoreStolenInGroup` in [WardrobeController.js](../passages/home/WardrobeController.js).
+* **Clothing and nudity events** - Ghosts can steal clothing during hunts, creating nudity events that affect the exhibitionism system. Per-item steal/restore is driven by `setup.Wardrobe.stealGarment` / `restoreGarment` in [WardrobeController.js](../passages/home/WardrobeController.js).
   * [StealClothes.tw](../passages/haunted_houses/general/StealClothes.tw) - Clothes-stealing entry point (dispatches to the per-slot variants in [stealPassages.tw](../passages/haunted_houses/general/stealPassages.tw))
   * [stealPassages.tw](../passages/haunted_houses/general/stealPassages.tw) - Per-slot steal/restore passage bodies
-  * [FindStolenClothes.tw](../passages/haunted_houses/general/FindStolenClothes.tw) - Finding and re-dressing in stolen clothes (calls the `restoreStolenInGroup` helpers for each slot)
+  * [FindStolenClothes.tw](../passages/haunted_houses/general/FindStolenClothes.tw) - Finding and re-dressing in stolen clothes (calls the `restoreGarment` helper for each slot)
   * [NudityEvent.tw](../passages/haunted_houses/general/NudityEvent.tw) - Nudity event triggers
   * [NudityEventTwo.tw](../passages/haunted_houses/general/NudityEventTwo.tw) - Second nudity event
 

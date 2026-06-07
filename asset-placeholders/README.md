@@ -37,7 +37,7 @@ The numeric stage suffix on legacy `jeans1/jeans2/jeans3` was renamed to
 ## Adding a placeholder
 
 ```bash
-python3 tools/make_placeholder.py "LABEL" PATH WIDTH HEIGHT
+python3 tools/make_placeholder.py "TEXT" PATH WIDTH HEIGHT
 ```
 
 `PATH` is relative to this directory. Supported extensions: `.png`, `.jpg`,

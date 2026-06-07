@@ -2,7 +2,7 @@ const { expect } = require('@playwright/test');
 const { setVar } = require('../helpers');
 
 /**
- * Set the hunt mode (0 = none, 2 = active, 3 = possessed).
+ * Set the hunt mode (0 = none, 2 = active, 3 = possessed, 4 = ended).
  * Auto-creates a stub $run for modes >= 2 so tests that haven't called
  * setupHunt can still exercise mode transitions.
  */

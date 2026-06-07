@@ -13,7 +13,7 @@ const { goToPassage, setVar, getVar, resetGame } = require('./helpers');
  *      visibly identical game. Catches class-instance dehydration,
  *      undefined survival, scrub side-effects on live state.
  *   2. GHOST PROTOTYPE — Ghost is a prototype-based class
- *      (passages/ghosts/GhostController.js:227). Plain-object
+ *      (passages/ghosts/GhostController.js:291). Plain-object
  *      "regressions" look fine in console but lose every method.
  *   3. LEGACY MIGRATION — old saves stored hunt state as a scatter of
  *      flat $ghost / $ghostName / $ghostEvidence / etc. variables;

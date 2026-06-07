@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+"""Scan passages/ for `assets/...` references and report which ones point
+at files missing from disk, with found / not-found counts. A quick dev
+companion to tools/check_assets.py (which is the lint that gates the build)."""
 import collections
 import os
 import re

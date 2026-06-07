@@ -52,7 +52,7 @@ setup.Park = (function () {
 			// Both park-event branches drain the MC to 0 energy.
 			setup.Mc.setEnergy(0);
 		},
-		isBeautyBelow: function (threshold) {
+		isBeautyAtLeast: function (threshold) {
 			// Used by the jogging event to test whether the stalker
 			// loses interest vs. starts chasing.
 			return threshold <= setup.Mc.beauty();

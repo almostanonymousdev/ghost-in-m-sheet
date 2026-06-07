@@ -1,8 +1,8 @@
 /**
  * Controller method-naming convention.
  *
- * Each controller (passages/<area>/<Name>Controller.tw, also nested
- * subcontrollers) exposes its API as `setup.<Name>`. To keep the
+ * Each controller (passages/<area>/<Name>Controller.js) exposes its
+ * API as `setup.<Name>`. To keep the
  * surface predictable, methods follow a fixed verb scheme:
  *
  *   Getter (no-arg, returns a value):  bareNoun()       e.g. money(), sanity()
@@ -26,14 +26,14 @@ const path = require('path');
 
 const PASSAGES_ROOT = path.join(__dirname, '..', 'passages');
 
-/* Recursively collect every Controller.tw file under passages/. */
+/* Recursively collect every Controller.js file under passages/. */
 function collectControllerFiles(dir) {
   const out = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       out.push(...collectControllerFiles(full));
-    } else if (entry.name.endsWith('Controller.tw')) {
+    } else if (entry.name.endsWith('Controller.js')) {
       out.push(full);
     }
   }
@@ -68,19 +68,11 @@ test.describe('controller method naming', () => {
 
     for (const file of files) {
       const text = fs.readFileSync(file, 'utf8');
-      // Walk passage by passage; only [script] passages declare controllers.
+      // Controllers are plain .js modules: the whole file is script,
+      // so every line is a candidate method definition.
       const lines = text.split('\n');
-      let inScriptPassage = false;
-      let passageStart = 0;
       for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        if (line.startsWith(':: ')) {
-          inScriptPassage = /\[\s*[^\]]*\bscript\b[^\]]*\]/.test(line);
-          passageStart = i;
-          continue;
-        }
-        if (!inScriptPassage) continue;
-        const stripped = stripStringsAndComments(line);
+        const stripped = stripStringsAndComments(lines[i]);
         // Match `^<whitespace><name>: function` at start of stripped line —
         // the canonical method-definition form inside a return-object
         // literal or `api.X = function ...` assignment.

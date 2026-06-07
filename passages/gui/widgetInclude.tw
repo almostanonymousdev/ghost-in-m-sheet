@@ -46,12 +46,13 @@
 	<</if>>
 <</widget>>
 
-/* Backwards-compat aliases. Old call sites in widgetHauntedHouseRoom
-   still emit <<includeTimeEventClothesHunt>> / <<includeTimeEventHunt>>
-   for the two nav-link variants (ironclad's "hunt" style and the
-   default clothes-hunt style). With the steal-clothes step now gated
-   inside <<huntTickEventChain>> via HuntController.shouldTriggerSteal,
-   both variants resolve to the same shared widget. */
+/* Backwards-compat aliases for the two old nav-link variants
+   (<<includeTimeEventClothesHunt>> = the default clothes-hunt style,
+   <<includeTimeEventHunt>> = ironclad's "hunt" style). No passage emits
+   these anymore — the steal-clothes step is gated inside
+   <<huntTickEventChain>> via HuntController.shouldTriggerSteal, so both
+   now resolve to the same shared <<huntTickStep>>. Kept so an in-flight
+   save mid-hunt can't hit an undefined macro. */
 <<widget "includeTimeEventClothesHunt">><<huntTickStep>><</widget>>
 <<widget "includeTimeEventHunt">><<huntTickStep>><</widget>>
 

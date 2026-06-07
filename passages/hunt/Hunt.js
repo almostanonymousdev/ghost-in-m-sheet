@@ -108,7 +108,7 @@ setup.Hunt = (function () {
 		/* Per-event base sanity drain (EventMC roll). Oni broadens.
 		   ctx: { range: [lo, hi] }. */
 		SANITY_EVENT_LOSS_RANGE: 'sanity-event-loss-range',
-		/* SaveEventPassage decreasing-sanity stage table. Shade flips
+		/* Save-event decreasing-sanity stage table. Shade flips
 		   the curve so high sanity rolls more events.
 		   ctx: { inverted: false }. */
 		SANITY_STAGES_INVERTED: 'sanity-stages-inverted',

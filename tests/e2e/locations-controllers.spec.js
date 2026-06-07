@@ -134,12 +134,12 @@ test.describe('Park — controller mutations', () => {
     expect(await getVar(page, 'mc.energy')).toBe(0);
   });
 
-  test('isBeautyBelow flips around the threshold', async ({ game: page }) => {
+  test('isBeautyAtLeast checks the threshold', async ({ game: page }) => {
     await callSetup(page, `setup.Mc.setBeauty(30)`);
-    expect(await callSetup(page, 'setup.Park.isBeautyBelow(30)')).toBe(true);
-    expect(await callSetup(page, 'setup.Park.isBeautyBelow(40)')).toBe(false);
+    expect(await callSetup(page, 'setup.Park.isBeautyAtLeast(30)')).toBe(true);
+    expect(await callSetup(page, 'setup.Park.isBeautyAtLeast(40)')).toBe(false);
     await callSetup(page, `setup.Mc.setBeauty(40)`);
-    expect(await callSetup(page, 'setup.Park.isBeautyBelow(40)')).toBe(true);
+    expect(await callSetup(page, 'setup.Park.isBeautyAtLeast(40)')).toBe(true);
   });
 
   test('canJogNow requires sportswear, hours-in-range, no cooldown, energy >= 2', async ({ game: page }) => {

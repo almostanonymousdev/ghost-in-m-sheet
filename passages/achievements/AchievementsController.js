@@ -1,6 +1,6 @@
 /*
  * Achievements: persistent, one-shot unlocks. Browseable across saves,
- * survives endRun() / endContract(). The catalogue is the source of
+ * surviving hunt teardown and contract settlement. The catalogue is the source of
  * truth for valid ids; $achievements is just the unlocked-when map.
  *
  * Only Hunt-event-bus subscribers are wired here -- adding non-hunt

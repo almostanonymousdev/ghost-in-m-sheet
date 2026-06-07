@@ -39,6 +39,9 @@ setup.HuntEnums = (function () {
 			id: 'identify',
 			description: 'Identify the ghost then banish it from the house. Chanting its name will keep you safe.'
 		}),
+		// Reserved for a planned rescue objective; no hunt sets it yet
+		// (every hunt defaults to IDENTIFY). Kept so older saves and
+		// tests can still round-trip the id.
 		RESCUE: Object.freeze({
 			id: 'rescue',
 			description: ''

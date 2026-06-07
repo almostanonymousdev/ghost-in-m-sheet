@@ -330,6 +330,17 @@ test.describe('Companion Controller', () => {
     expect(await getVar(page, 'isCompChosen')).toBe(false);
   });
 
+  test('acknowledgeCompanionResult clears the per-hunt room (randomGhostPassage)', async ({ game: page }) => {
+    // arrange: a finished hunt left a chosen companion room behind
+    await setVar(page, 'randomGhostPassage', 5);
+
+    // act: end-of-hunt cleanup (the `resolve` transition)
+    await page.evaluate(() => SugarCube.setup.Companion.acknowledgeCompanionResult());
+
+    // assert: the room scratch is reset so the next hunt re-picks
+    expect(await getVar(page, 'randomGhostPassage')).toBe(0);
+  });
+
   // --- Cursed item ---
 
   test('cursedItemQuestUnlocked false when gotCursedItem is undefined', async ({ game: page }) => {

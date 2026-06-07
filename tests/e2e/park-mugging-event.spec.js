@@ -89,15 +89,15 @@ test.describe('Park mugging event', () => {
     expect(await callSetup(page, 'setup.Park.canEscapeParkEvent()')).toBe(true);
   });
 
-  test('isBeautyBelow returns true when the threshold is at or below MC beauty', async ({ game: page }) => {
+  test('isBeautyAtLeast returns true when the threshold is at or below MC beauty', async ({ game: page }) => {
     await page.evaluate(() => {
       window._origBeauty = SugarCube.setup.Mc.beauty;
       SugarCube.setup.Mc.beauty = () => 50;
     });
     try {
-      expect(await callSetup(page, 'setup.Park.isBeautyBelow(40)')).toBe(true);
-      expect(await callSetup(page, 'setup.Park.isBeautyBelow(50)')).toBe(true);
-      expect(await callSetup(page, 'setup.Park.isBeautyBelow(70)')).toBe(false);
+      expect(await callSetup(page, 'setup.Park.isBeautyAtLeast(40)')).toBe(true);
+      expect(await callSetup(page, 'setup.Park.isBeautyAtLeast(50)')).toBe(true);
+      expect(await callSetup(page, 'setup.Park.isBeautyAtLeast(70)')).toBe(false);
     } finally {
       await page.evaluate(() => {
         if (window._origBeauty) SugarCube.setup.Mc.beauty = window._origBeauty;

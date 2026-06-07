@@ -11,10 +11,9 @@ setup.RoomLight = Object.freeze({
  * Centralized room background data and helpers.
  *
  * Before this controller existed, the same per-room facts were
- * repeated across the CSS classes in StoryStylesheet.tw, the
+ * repeated across the CSS classes in StoryStylesheet.css and the
  * inline <style> blocks in widgetIncludeStyles.tw (twice: one chain
- * for previous(), one for previous(2)), and the
- * <<addclass>>/<<removeclass>> switch in LightPassageManual.tw.
+ * for previous(), one for previous(2)).
  *
  * Every widget / passage that needs a room's light/dark asset,
  * body class, or "is this room currently dark?" flag now reads

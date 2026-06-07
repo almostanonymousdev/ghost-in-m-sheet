@@ -25,7 +25,7 @@ setup.Companion = (function () {
 	   matrix lives in one place and is diff-friendly when a new
 	   transition needs to nudge one of the same fields. STAY_TOGETHER
 	   and RESOLVE both land on Plan1; the difference is RESOLVE also
-	   stamps the Owaissa-passage scratch flag clear after a successful
+	   clears the per-hunt room scratch (randomGhostPassage) on a successful
 	   mission. START_PLAN takes the planKey / chance / timer through
 	   the `extra` arg since those vary per call. */
 	var KNOWN_PLANS = Object.freeze(['Plan1', 'Plan2', 'Plan3', 'Plan4']);
@@ -40,7 +40,7 @@ setup.Companion = (function () {
 			isCompRoomChosen: false, showComp: CS.VISIBLE
 		},
 		resolve: {
-			chosenPlan: 'Plan1', chosenPlanActivated: 0, randomPassageOwaissa: 0,
+			chosenPlan: 'Plan1', chosenPlanActivated: 0, randomGhostPassage: 0,
 			isCompRoomChosen: false, showComp: CS.VISIBLE
 		},
 		stayTogether: { chosenPlan: 'Plan1', chosenPlanActivated: 0, showComp: CS.VISIBLE },
@@ -70,7 +70,7 @@ setup.Companion = (function () {
 		'isCompRoomChosen', 'randomGhostPassage', 'showComp',
 		'aliceWorkDone',
 		'meetAlice',
-		'videoEventCompanion', 'randomPassageOwaissa'
+		'videoEventCompanion'
 	]);
 
 	// Pure data lives in CompanionData.js (loaded after this script
