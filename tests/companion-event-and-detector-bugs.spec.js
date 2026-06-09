@@ -184,3 +184,58 @@ test.describe('Companion event + detector regressions', () => {
     expect(await getVar(game, 'wardrobe.stolen.panties')).toBe(true);
   });
 });
+
+/* Reported bug: the player got stuck on a CompanionEvent — a crit-tier
+ * video (e.g. characters/alice/4.2.mp4) playing with NO navigation link.
+ *
+ * Cause: CompanionEvent.tw picks the media tier with pickEventMedia
+ * (sanity >= 25 ? "low" : "crit") but the text/continue tier with
+ * eventSanityTier (... s >= 25 ? 3 : s >= 1 ? 4 : 0). At sanity 0 (or
+ * negative — applyEventStatDeltas subtracted with no floor) the two
+ * disagreed: media -> "crit" (renders a 4.x video), text -> tier 0, which
+ * matches none of CompanionEvent.tw's `<<if _tier is 1..4>>` branches, so
+ * neither the dialogue nor the <<isCompanionContinue>> link rendered. */
+test.describe('Companion event — crit/zero-sanity dead-end', () => {
+  function setActiveCompanion(game, name, fields) {
+    return game.evaluate(({ n, f }) => {
+      const V = SugarCube.State.variables;
+      V.companion = { name: n };
+      const row = V[n.toLowerCase()];
+      if (row && f) Object.keys(f).forEach((k) => { row[k] = f[k]; });
+    }, { n: name, f: fields || {} });
+  }
+
+  test('eventSanityTier matches pickEventMedia at the crit boundary (incl. sanity 0/negative)', async ({ game }) => {
+    /* The crit media bucket is sanity < 25; the text tier for that bucket
+       must be 4 for every sanity value the media calls "crit", or the
+       passage renders a video with no matching text branch. */
+    for (const sanity of [24, 10, 1, 0, -5]) {
+      await setActiveCompanion(game, 'Alice', { sanity, lust: 0 });
+      const mediaTier = await callSetup(game, 'setup.Companion.sanityTier()');
+      const textTier = await callSetup(game, 'setup.Companion.eventSanityTier()');
+      expect(mediaTier, `media tier @ sanity ${sanity}`).toBe('critical');
+      expect(textTier, `text tier @ sanity ${sanity}`).toBe(4);
+    }
+    /* No active companion still resolves to the inert tier 0. */
+    await game.evaluate(() => { SugarCube.State.variables.companion = null; });
+    expect(await callSetup(game, 'setup.Companion.eventSanityTier()')).toBe(0);
+  });
+
+  test('CompanionEvent renders a continue link at zero companion sanity', async ({ game }) => {
+    await setActiveCompanion(game, 'Alice', { sanity: 0, lust: 0 });
+    await goToPassage(game, 'CompanionEvent');
+
+    const passage = game.locator('#passages');
+    /* The crit video is picked... */
+    expect(await getVar(game, 'videoEventCompanion')).toMatch(/alice\/4\.\d+\.mp4/);
+    /* ...and the player is NOT stranded: the continue link is present. */
+    await expect(passage.getByText('Will you be able to continue?')).toBeVisible();
+    expect(await passage.locator('a').count()).toBeGreaterThan(0);
+  });
+
+  test('applyEventStatDeltas floors companion sanity at 0', async ({ game }) => {
+    await setActiveCompanion(game, 'Alice', { sanity: 5, lust: 0, eventSanityLoss: 10 });
+    await game.evaluate(() => SugarCube.setup.Companion.applyEventStatDeltas());
+    expect(await getVar(game, 'alice.sanity')).toBe(0);
+  });
+});
