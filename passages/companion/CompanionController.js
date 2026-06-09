@@ -95,6 +95,20 @@ setup.Companion = (function () {
 		return caps[lvl];
 	}
 
+	/* CompanionEvent sanity tiers — ONE source of truth. A mismatch renders a
+	   media tier with no matching text branch, stranding the player on a
+	   crit video with no navigation link. */
+	var EVENT_TIER_CUTOFFS = [75, 50, 25];
+	var EVENT_MEDIA_KEYS = ['high', 'mid', 'low', 'crit'];
+	var SANITY_TIER_NAMES = ['high', 'mid', 'low', 'critical'];
+
+	function sanityTierIndex(sanity) {
+		for (var i = 0; i < EVENT_TIER_CUTOFFS.length; i++) {
+			if (sanity >= EVENT_TIER_CUTOFFS[i]) return i;
+		}
+		return EVENT_TIER_CUTOFFS.length;
+	}
+
 	var api = {
 		OWNED_VARS: OWNED_VARS,
 		list: function () { return companions(); },
@@ -200,11 +214,7 @@ setup.Companion = (function () {
 
 		sanityTier: function () {
 			var c = this.activeState(); if (!c) return "none";
-			var s = c.sanity;
-			if (s >= 75) return "high";
-			if (s >= 50) return "mid";
-			if (s >= 25) return "low";
-			return "critical";
+			return SANITY_TIER_NAMES[sanityTierIndex(c.sanity)];
 		},
 		isLustHigh: function () {
 			var c = this.activeState();
@@ -458,10 +468,7 @@ setup.Companion = (function () {
 			var stats = this.activeState(); if (!stats) return null;
 			var c = this.active(); if (!c) return null;
 			if (inElm === undefined) inElm = previous() === 'ElmBasement';
-			var tierKey = stats.sanity >= 75 ? "high"
-				: stats.sanity >= 50 ? "mid"
-					: stats.sanity >= 25 ? "low"
-						: "crit";
+			var tierKey = EVENT_MEDIA_KEYS[sanityTierIndex(stats.sanity)];
 			var list = c.pickEventMediaList(tierKey, {
 				lust: stats.lust,
 				inElm: inElm
@@ -472,12 +479,13 @@ setup.Companion = (function () {
 			return pick;
 		},
 
-		/* Sanity-tier key for the CompanionEvent dispatcher: picks
-		   which <<companionTextEventN>> variant + <<isCompanionContinue>>
+		/* Sanity-tier number (1..4) for the CompanionEvent dispatcher:
+		   picks which <<companionTextEventN>> variant + <<isCompanionContinue>>
 		   threshold set applies. */
 		eventSanityTier: function () {
-			var s = (this.activeState() || {}).sanity || 0;
-			return s >= 75 ? 1 : s >= 50 ? 2 : s >= 25 ? 3 : s >= 1 ? 4 : 0;
+			var c = this.activeState();
+			if (!c || typeof c.sanity !== 'number') return 0;
+			return sanityTierIndex(c.sanity) + 1;
 		},
 
 		/* Contacts.tw flags -- used on the MC's phone home screen
@@ -487,7 +495,7 @@ setup.Companion = (function () {
 		markMet: function (name) { var c = getByName(name); if (c) c.markMet(); },
 		isPossessed: function (name) { var c = getByName(name); return c ? c.isPossessed() : false; },
 		isUnavailable: function (name) { var c = getByName(name); return c ? c.isUnavailable() : false; },
-		isUnlocked:    function (name) { var c = getByName(name); return c ? c.isUnlocked() : false; },
+		isUnlocked: function (name) { var c = getByName(name); return c ? c.isUnlocked() : false; },
 		aliceWorkDone: function () { return State.variables.aliceWorkDone === true; },
 		/* Catalogue-driven dispatch hooks. Every site that used to test
 		   `activeCompanionName() === "Brook"` etc. routes through a
@@ -730,6 +738,7 @@ setup.Companion = (function () {
 			var c = this.activeState();
 			if (!c) return;
 			c.sanity -= this.eventSanityLoss();
+			if (c.sanity < 0) c.sanity = 0;
 			c.lust += this.eventLustGain();
 		},
 
