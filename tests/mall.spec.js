@@ -69,8 +69,34 @@ test.describe('Mall Controller', () => {
     expect(result).toBe(false);
   });
 
-  test('blakeCanIntroduceCursedItemBuyback requires gotCursedItem defined and dialogBlake != 1', async ({ game: page }) => {
+  test('blakeCanIntroduceCursedItemBuyback requires holding a cursed item and dialogBlake != 1', async ({ game: page }) => {
     // arrange
+    await setVar(page, 'gotCursedItem', 1);
+
+    // act
+    const result = await callSetup(page, 'setup.Mall.blakeCanIntroduceCursedItemBuyback()');
+
+    // assert
+    expect(result).toBe(true);
+  });
+
+  test('blakeCanIntroduceCursedItemBuyback false when quest started but not holding', async ({ game: page }) => {
+    // arrange: quest started (gotCursedItem defined) but item already
+    // turned in / not yet found -- Blake's buyback is keyed on holding,
+    // not on the witch's quest, so she has nothing to offer to buy.
+    await setVar(page, 'gotCursedItem', 0);
+
+    // act
+    const result = await callSetup(page, 'setup.Mall.blakeCanIntroduceCursedItemBuyback()');
+
+    // assert
+    expect(result).toBe(false);
+  });
+
+  test('blakeCanIntroduceCursedItemBuyback true while holding regardless of MC level', async ({ game: page }) => {
+    // arrange: a level-1 holder can still sell to Blake -- the buyback
+    // sits outside the lvl-2 cursed-item quest gate.
+    await setVar(page, 'mc.lvl', 1);
     await setVar(page, 'gotCursedItem', 1);
 
     // act

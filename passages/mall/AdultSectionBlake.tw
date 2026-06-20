@@ -13,23 +13,16 @@
 		<<else>>
 			<<say>>A lot of men seem to walks into those houses, but you're one of the few women who keep making it out. Good. That'd be such a waste of a pretty face.<</say>><br>
 		<</if>>
+		<<if setup.Mall.blakeHasCursedItemToSell()>>
+			<<include "BlakeCursedItemSell">>
+		<</if>>
 	<<else>>
 		<<say>>Hi <<= setup.Mc.name()>>, need any help?<</say>><br>
 		<<if setup.Mall.blakeCanIntroduceCursedItemBuyback()>>
 			<<include "BlakeCursedItemOffer">>
 		<</if>>
 		<<if setup.Mall.blakeHasCursedItemToSell()>>
-			<<linkreplace "@@.usebtn;Give her the cursed item@@">>
-				<<say>>Thanks, gorgeous. Here's your money. Feel free to bring more, I'll gladly buy them from you.<</say>><br>
-				Money: +60 $ <br>
-
-				<<if setup.Mall.canRaiseBlakeRelationship()>>
-					<<run setup.Mall.raiseBlakeRelationship()>>
-					@@.mc-speech; Relationship with Blake increased: now <<= setup.Mall.blakeRelationship()>>!@@
-				<</if>>
-				<<run setup.Mall.sellCursedItemToBlake()>>
-			<</linkreplace>>
-		<<else>>
+			<<include "BlakeCursedItemSell">>
 		<</if>>
 	<</if>>
 
@@ -120,3 +113,14 @@
 
 @@.mc-action;Now you can bring cursed items to the adult store and sell them for a higher price.@@
 <<run setup.Mall.setBlakeDialogStage(1)>>
+
+:: BlakeCursedItemSell [nobr] {"position":"3150,1750","size":"100,100"}
+<<linkreplace "@@.usebtn;Give her the cursed item@@">>
+	<<say>>Thanks, gorgeous. Here's your money. Feel free to bring more, I'll gladly buy them from you.<</say>><br>
+	Money: +60 $ <br>
+	<<if setup.Mall.canRaiseBlakeRelationship()>>
+		<<run setup.Mall.raiseBlakeRelationship()>>
+		@@.mc-speech; Relationship with Blake increased: now <<= setup.Mall.blakeRelationship()>>!@@
+	<</if>>
+	<<run setup.Mall.sellCursedItemToBlake()>>
+<</linkreplace>>

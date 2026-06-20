@@ -375,4 +375,30 @@ test.describe('Mall — shopping and Blake content', () => {
       await expectCleanPassage(page);
     });
   }
+
+  test('low-level holder can sell a cursed item to Blake on first contact', async ({ game: page }) => {
+    // arrange: Blake unlocked (Alice lvl 2), but the MC is only lvl 1 and
+    // never took Khadija's lvl-2 cursed-item quest -- she is simply holding
+    // one. The buyback is keyed on holding, not on the quest/level, so the
+    // sale should be available on the very first visit.
+    await setVar(page, 'hours', 12);
+    await setVar(page, 'mc.lvl', 1);
+    await setVar(page, 'mc.money', 0);
+    await page.evaluate(() => { SugarCube.State.variables.alice.lvl = 2; });
+    await setVar(page, 'gotCursedItem', 1);
+    await setVar(page, 'isCIDildo', true);
+
+    await goToPassage(page, 'AdultSectionBlake');
+
+    // act: the sell link is present on first contact
+    const sellLink = page.locator('.passage a:has-text("Give her the cursed item")');
+    await expect(sellLink).toHaveCount(1);
+    await sellLink.first().click();
+
+    // assert: paid out and the held item cleared
+    expect(await getVar(page, 'mc.money')).toBe(60);
+    expect(await getVar(page, 'gotCursedItem')).toBe(0);
+    expect(await getVar(page, 'isCIDildo')).toBe(false);
+    await expectCleanPassage(page);
+  });
 });

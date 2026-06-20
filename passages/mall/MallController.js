@@ -27,7 +27,7 @@ setup.Mall = (function () {
 			return sv().dialogBlake === undefined;
 		},
 		blakeCanIntroduceCursedItemBuyback: function () {
-			return setup.Witch.cursedItemQuestStarted() && sv().dialogBlake !== 1;
+			return setup.Witch.hasCursedItemToTurnIn() && sv().dialogBlake !== 1;
 		},
 		blakeHasCursedItemToSell: function () {
 			return setup.Witch.hasCursedItemToTurnIn() && sv().dialogBlake === 1;
